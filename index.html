@@ -1638,7 +1638,33 @@ function scheduleWhy(p,d){
     +'<tr><td class="lab">ผู้สูงอายุ: เวท 2 วันไม่ติดกัน + ทรงตัว 3 วัน</td><td>ACSM/AHA สำหรับ 65+ · ฝึกทรงตัวลดการล้ม 24% (Cochrane)</td><td>Nelson et al. 2007 · Sherrington et al. 2019</td></tr>'
     +'</tbody></table></div>'
     +'<p class="hint">ลิงก์งานวิจัยทั้งหมดอยู่ในปุ่ม "แหล่งอ้างอิง" หมวด "การจัดตารางออกกำลัง"</p>');
-  return short+det1;
+  return weekCheck(p)+short+det1;
+}
+/* what the week ACTUALLY looks like after busy ticks / hand edits — and whether it still follows the rules */
+function weekCheck(p){
+  var rows; try{ rows=layout(p); }catch(e){ return ""; }
+  var SH=["จ","อ","พ","พฤ","ศ","ส","อา"];
+  var line=rows.map(function(r,i){ return SH[i]+" "+(r.busy?"ติดธุระ":r.s?r.s.what:"พัก"); }).join(" · ");
+  var w=rows.filter(function(r){return r.s&&r.s.kind!=="cardio"}).length, c=rows.filter(function(r){return r.s&&r.s.kind==="cardio"}).length, rest=rows.filter(function(r){return !r.s&&!r.busy}).length;
+  var cmin=rows.reduce(function(a,r){ if(!r.s)return a; if(r.s.kind==="cardio")return a+(r.s.mins||30); if(/\+ คาร์ดิโอหนัก/.test(r.s.what))return a+15; if(/\+ คาร์ดิโอ/.test(r.s.what))return a+20; return a; },0);
+  var hard=rows.map(function(r){return !!(r.s&&/คาร์ดิโอหนัก/.test(r.s.what))});
+  var warn=[], good=[];
+  if(w===0&&p.d.lift) warn.push("ไม่มีวันเวทเลย — เวทคือตัวที่รักษากล้ามและกระดูก ควรมีอย่างน้อย 2 วัน");
+  else if(w===1&&p.d.lift) warn.push("เวทแค่ 1 วัน — กล้ามแต่ละกลุ่มได้เล่นครั้งเดียว โตช้ากว่า 2 ครั้ง/สัปดาห์ชัดเจน");
+  else if(w>=2) good.push("เวท "+w+" วัน");
+  if(cmin<150&&cmin>0) warn.push("คาร์ดิโอรวม "+cmin+" นาที ยังไม่ถึง 150 นาที/สัปดาห์ (เกณฑ์ WHO ที่ลดโรคหัวใจ เบาหวาน) — เพิ่มได้ด้วย \"เวท + คาร์ดิโอเบา\" หรือเดินเร็ววันพัก");
+  else if(cmin>=150) good.push("คาร์ดิโอ "+cmin+" นาที ≥ 150");
+  else if(cmin===0) warn.push("ไม่มีคาร์ดิโอเลย — หัวใจและความดันต้องการอย่างน้อย 150 นาที/สัปดาห์");
+  if(rest===0) warn.push("ไม่มีวันพักเลย — กล้ามซ่อมและโตวันพัก ไม่ใช่วันเล่น ควรพักอย่างน้อย 1 วัน");
+  else good.push("พัก "+rest+" วัน");
+  var hc=hard.filter(Boolean).length; if(hc>2) warn.push("คาร์ดิโอหนัก "+hc+" ครั้ง — ห้ามเกิน 2 ครั้ง/สัปดาห์");
+  for(var i=1;i<7;i++){ if(hard[i-1]&&hard[i]){ warn.push("คาร์ดิโอหนัก 2 วันติด ("+DAYNAMES[i-1]+"–"+DAYNAMES[i]+") — หัวใจและข้อต่อต้องการ 48 ชั่วโมง"); break; } }
+  (p.adjWarn||[]).forEach(function(a){ warn.push(a); });
+  if(!p.manualUsed&&!(p.busy||[]).some(Boolean)) return "";
+  var verdict=warn.length?'<b style="color:var(--warn)">ตารางที่คุณจัด มี '+warn.length+' จุดที่ควรแก้</b>':'<b style="color:var(--ok)">ตารางที่คุณจัด ผ่านทุกกฎ ✓</b>';
+  return '<div class="flag'+(warn.length?'':' ok')+'"><b>สัปดาห์นี้ตามที่คุณจัดจริง</b><span>'+esc(line)+'<br>'+verdict+(good.length?' · '+esc(good.join(" · ")):'')
+    +(warn.length?'<ul style="margin:6px 0 0 18px">'+warn.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul>':'')
+    +'</span></div>';
 }
 
 /* ================= summary → image (canvas) ================= */
@@ -2082,7 +2108,7 @@ function render(p,isSample){
       +'<div id="tweakout"></div>'
     +'</div>'
     +'<div class="adv">'
-    +scheduleWhy(p,d)
+    +'<div id="schedwhy">'+scheduleWhy(p,d)+'</div>'
     +wn.slip
     +det("ถ้าต้องสลับวัน อะไรห้ามอยู่ติดกัน",
       '<ul>'
@@ -2300,6 +2326,7 @@ function paintWeek(p){
   if(!w.length&&activeDays===p.sessions.length)
     w.push('<div class="flag ok"><b>ตารางครบทุกอย่าง</b><span>เล่น '+activeDays+' วัน พัก '+restDays+' วัน · ระยะห่างกล้ามแต่ละกลุ่มถูกต้อง</span></div>');
   $("wkwarn").innerHTML=w.join("");
+  var sw=$("schedwhy"); if(sw){ try{ sw.innerHTML=scheduleWhy(p,p.d); }catch(e){} }
 
   var mr=$("manReset"); if(mr){ mr.addEventListener("click",function(e){ e.preventDefault(); saveManual({}); snapshotActive(); paintWeek(p); refreshSummary(p); try{lastICS=toICS(p)}catch(x){} lastText=asText(p); }); }
   Array.prototype.forEach.call(body.querySelectorAll('select.daypick'),function(sel){
@@ -2614,7 +2641,7 @@ function cardioKinds(p){ /* three cardio flavours a person can pick by hand — 
       detail:"30–40 นาที โซนเบา: หายใจสบาย คุยได้ยาว ๆ ร้องเพลงได้ · "+sport+" ช้า ๆ · เหมาะกับวันถัดจากเวทหนัก หรือวันที่นอนน้อย · ถ้ารู้สึกเหนื่อย = เร็วไป ให้ช้าลง"},
     c_long:{what:"คาร์ดิโอยาว",kind:"cardio",mins:60,why:"หัวใจ ปอด ความอึด → เดินไกลไม่หอบ เผาไขมันสะสมมากที่สุดต่อครั้ง",
       detail:"50–70 นาที โซนปานกลาง: หายใจแรงขึ้น พูดเป็นประโยคได้ ร้องเพลงไม่ได้ · "+sport+" จังหวะคงที่ทั้งชั่วโมง ห้ามเร่งจนพูดไม่ได้ · 20 นาทีแรกร่างกายใช้น้ำตาลในเลือด หลังจากนั้นค่อยดึงไขมันมาใช้มากขึ้น นี่คือเหตุผลที่ต้องยาว · กินข้าวก่อน 1.5–2 ชั่วโมง จิบน้ำทุก 15 นาที"},
-    c_hard:{what:"คาร์ดิโอหนัก",kind:"cardio",mins:25,why:vigOK?"ความฟิตสูงสุด (VO2max) หัวใจแข็งแรงเร็วที่สุด → ขึ้นบันไดไม่หอบ ใช้เวลาน้อย":"⛔ ห้าม: โซนหนักยังไม่เหมาะกับคุณตอนนี้ ให้ใช้คาร์ดิโอเบาหรือยาวแทน",
+    c_hard:{what:vigOK?"คาร์ดิโอหนัก":"คาร์ดิโอเบา (แทนหนัก)",kind:"cardio",mins:vigOK?25:30,why:vigOK?"ความฟิตสูงสุด (VO2max) หัวใจแข็งแรงเร็วที่สุด → ขึ้นบันไดไม่หอบ ใช้เวลาน้อย":"⛔ ห้าม: โซนหนักยังไม่เหมาะกับคุณตอนนี้ ให้ใช้คาร์ดิโอเบาหรือยาวแทน",
       detail:vigOK?"25 นาที แบบสลับ: วอร์ม 5 นาที → เร่ง 1 นาที (พูดได้ทีละไม่กี่คำ) สลับ เบา 2 นาที × 6 รอบ → คูลดาวน์ 5 นาที · "+sport+" · ไม่เกินสัปดาห์ละ 2 ครั้ง และห้ามทำวันติดกัน เพราะหัวใจและข้อต่อต้องการ 48 ชั่วโมงฟื้น · ถ้าเจ็บหน้าอก เวียนหัว หรือหายใจไม่ทันเกิน 2 นาทีหลังหยุด ให้เลิกและปรึกษาหมอ":"ระบบไม่จัดคาร์ดิโอหนักให้คุณในช่วงนี้ ("+((p.recZone&&p.recZone.why)||"ยังอยู่ช่วงเริ่มต้น")+") · วันนี้จัดเป็นคาร์ดิโอเบา 30 นาทีแทน"}
   };
 }
