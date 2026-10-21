@@ -2248,6 +2248,7 @@ function paintWeek(p){
   var rows=layout(p);
   var MAN=loadManual(), seen={}, pickOpts=[["","ตามระบบ"],["rest","พัก"]];
   p.sessions.forEach(function(sx,si){ if(seen[sx.what])return; seen[sx.what]=1; pickOpts.push(["s"+si,sx.what]); });
+  p.sessions.forEach(function(sx,si){ if(sx.kind==="cardio"||seen[sx.what+"+c"])return; seen[sx.what+"+c"]=1; pickOpts.push(["s"+si+"+c",sx.what+" + คาร์ดิโอ 20 นาที"]); });
   pickOpts.push(["walk","เดินเร็ว 30 นาที"]); if(!seen["คาร์ดิโอเบา"])pickOpts.push(["cardio","คาร์ดิโอเบา 30 นาที"]);
   body.innerHTML=rows.map(function(x,i){
     var what = x.busy ? "พัก (ติดธุระ)" : (x.s?x.s.what+(x.moved?" (ย้ายมา)":""):"พัก");
@@ -2277,7 +2278,7 @@ function paintWeek(p){
     if(x.busy) dt += " | กินวันนี้แบบวันพัก: โปรตีนเท่าเดิม ข้าว "+p.riceRest+" ทัพพี";
     return '<tr class="'+(x.busy||!x.s?"off":"")+'"><td class="day">'+x.day+'</td>'
       +'<td><label class="busy"><input type="checkbox" data-d="'+i+'"'+(p.busy[i]?" checked":"")+'><span>ติดธุระ</span></label>'
-      +(p.override||x.busy?'':'<select class="daypick" data-d="'+i+'" style="font-size:12px;padding:4px 6px;margin-top:6px;max-width:110px;color:var(--ink-soft)">'+pickOpts.map(function(o){return '<option value="'+o[0]+'"'+((MAN[i]||"")===o[0]?' selected':'')+'>'+esc(o[1])+'</option>'}).join("")+'</select>')
+      +(p.override||x.busy?'':'<select class="daypick" data-d="'+i+'" style="font-size:12px;padding:4px 6px;margin-top:6px;max-width:150px;width:100%;color:var(--ink-soft)">'+pickOpts.map(function(o){return '<option value="'+o[0]+'"'+((MAN[i]||"")===o[0]?' selected':'')+'>'+esc(o[1])+'</option>'}).join("")+'</select>')
       +'</td>'
       +'<td class="lab">'+esc(what)+'</td><td>'+whyHTML+(warmHTML||"")+linkify(esc(dt)).replace(/\|/g,"<br>")+(x.s&&!x.busy?coolHTML:"")+'</td></tr>';
   }).join("");
@@ -2605,8 +2606,9 @@ function saveManual(m){ try{ if(Object.keys(m).length)localStorage.setItem(MAN_K
 function manualSession(p,v){
   if(v==="walk")return {what:"เดินเร็ว",detail:"เดินเร็ว 30 นาที ให้พูดได้เป็นประโยคแต่ร้องเพลงไม่ได้ · เดินช้า 3 นาทีแรกและ 3 นาทีสุดท้าย",kind:"cardio",mins:30};
   if(v==="cardio")return {what:"คาร์ดิโอเบา",detail:"ปั่นจักรยาน ว่ายน้ำ หรือเดินเร็ว 30 นาที โซนเบา–กลาง",kind:"cardio",mins:30};
-  var m=/^s(\d+)$/.exec(v); if(m&&p.sessions[+m[1]])return p.sessions[+m[1]];
-  return null;
+  var m=/^s(\d+)(\+c)?$/.exec(v); if(!m||!p.sessions[+m[1]])return null;
+  var sx=p.sessions[+m[1]]; if(!m[2])return sx;
+  return Object.assign({},sx,{what:sx.what+" + คาร์ดิโอ",detail:sx.detail+" · แล้วต่อด้วยคาร์ดิโอเบา 20 นาที (เวทก่อน คาร์ดิโอหลัง — ถ้าทำคาร์ดิโอก่อนจะยกได้น้อยลง)",mins:(sx.mins||45)+20});
 }
 function loadProfiles(){ try{return JSON.parse(localStorage.getItem(PROF_KEY)||"{}")}catch(e){return {}} }
 function saveProfiles(o){ try{localStorage.setItem(PROF_KEY,JSON.stringify(o))}catch(e){} }
