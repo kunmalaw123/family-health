@@ -218,7 +218,9 @@ footer b{color:var(--ink-soft)}
       <div id="tgtbox"></div>
       <div class="grid2">
         <label>น้ำหนักเป้าหมาย (กก.)<input type="number" id="target" value="65" min="30" max="220" step="0.5" inputmode="decimal"></label>
+        <label>น้ำหนัก 1 เดือนที่ผ่านมา<select id="trend"><option value="">ไม่แน่ใจ</option><option value="same">เท่าเดิม (กินตามปกติ)</option><option value="same_big">เท่าเดิม ทั้งที่กินเยอะมาก</option><option value="up">ขึ้น</option><option value="down">ลง</option></select></label>
       </div>
+      <p class="hint" style="margin-top:-6px">ข้อนี้สำคัญกว่าที่คิด — ถ้าน้ำหนัก "เท่าเดิม" แปลว่าที่กินอยู่ = ที่ร่างกายใช้จริง ระบบจะใช้ค่านี้แทนสูตร · ใครกินเยอะแต่ไม่ขึ้นเลย เลือก "เท่าเดิม ทั้งที่กินเยอะมาก"</p>
       <p class="hint">ระบบคำนวณเป้าหมายที่ปลอดภัยให้แล้ว <b>ไม่ต้องเดาเอง</b> · แก้ตัวเลขเองได้ แต่ถ้าแก้แล้วต่ำกว่าเกณฑ์ ระบบจะดึงกลับขึ้นมา · โปรตีนกับการเล่นเวทตั้งไว้สูงเสมอไม่ว่าเป้าจะขึ้นหรือลง เพราะ <b>ลดไขมันกับเพิ่มกล้ามไปด้วยกันได้</b></p>
       <div>
         <p class="hint" style="margin-bottom:9px"><b>อยากให้ร่างกายดีขึ้นเรื่องอะไร — เลือกกี่ข้อก็ได้ ไม่จำกัด</b> แต่ละข้อจะเพิ่มท่าและวิธีวัดผลลงในแผน · <b>ไม่รู้จะเลือกอะไร ติ๊กข้อแรกไว้ข้อเดียวก็พอ</b></p>
@@ -359,7 +361,7 @@ footer b{color:var(--ink-soft)}
   <footer>
     <p><b>ความคลาดเคลื่อนที่ต้องรู้</b> — ชีพจรสูงสุดที่คำนวณได้คลาดเคลื่อน ±10–12 ครั้ง/นาที รายบุคคลอาจต่างถึง ±20–25 ให้ใช้ความรู้สึกเหนื่อยกับการทดสอบพูดควบคู่เสมอ · แคลอรี่ที่คำนวณเป็นค่าประมาณ ให้ปรับตามน้ำหนักจริงที่ขยับใน 2–3 สัปดาห์</p>
     <p><b>เครื่องมือนี้ทำอะไร และไม่ทำอะไร</b> — ทำ: คำนวณแคลอรี่ โปรตีน โซนหัวใจ และตารางออกกำลังจากแนวทางสากล สำหรับผู้ใหญ่ทั่วไปที่ต้องการดูแลสุขภาพ · ไม่ทำ: วินิจฉัยโรค ปรับยา หรือแทนการพบแพทย์ · ไม่เหมาะกับ: คนที่มีอาการเตือนในขั้นที่ 5 เด็กอายุต่ำกว่า 20 และคนที่หมอสั่งให้ออกกำลังภายใต้การดูแลเท่านั้น · ถ้ามีโรคประจำตัว ตั้งครรภ์ ให้นมบุตร หรือกินยาประจำ ให้เอาแผนนี้ไปให้แพทย์หรือเภสัชกรดูก่อนเริ่ม โดยเฉพาะส่วนวิตามิน</p>
-    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-21.7</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
+    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-21.9</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
   </footer>
 </div>
 
@@ -501,6 +503,7 @@ var CONDS=[
  {id:"cd_ckd",lab:"โรคไต หรือค่าไตผิดปกติ"},
  {id:"cd_ckdunk",lab:"ไม่เคยตรวจค่าไต ไม่รู้ว่าไตเป็นยังไง"},
  {id:"cd_oa",lab:"ข้อเข่าหรือข้อสะโพกเสื่อม"},
+ {id:"cd_crep",lab:"เข่าดังก๊อกแก๊กเวลาเดิน/ลุกนั่ง แต่ไม่เจ็บ ไม่บวม"},
  {id:"cd_heart",lab:"โรคหัวใจ เคยมีหัวใจขาดเลือด ทำบอลลูน หรือหัวใจล้มเหลว"},
  {id:"cd_af",lab:"หัวใจเต้นผิดจังหวะ หรือใส่เครื่องกระตุ้นหัวใจ"},
  {id:"cd_osteo",lab:"กระดูกพรุน กระดูกบาง หรือเคยกระดูกหักจากการล้มเบาๆ"},
@@ -574,6 +577,12 @@ var SOURCES=[
   ["Burd et al. 2011 — การสังเคราะห์โปรตีนในกล้ามยังสูงถึง 24 ชั่วโมงหลังเล่นเวท","https://pubmed.ncbi.nlm.nih.gov/21289204/"],
   ["Phillips & Van Loon 2011 — โปรตีนสำหรับคนออกกำลัง: ปริมาณรายวันและการกระจาย","https://pubmed.ncbi.nlm.nih.gov/22150425/"],
   ["Ainsworth et al. 2011 — Compendium of Physical Activities (ค่า MET ที่ใช้คิดพลังงานต่อครั้ง)","https://pubmed.ncbi.nlm.nih.gov/21681120/"]]],
+ ["เข่าดังแต่ไม่เจ็บ และการเดินในผู้สูงอายุ",[
+  ["Couch et al., BJSM 2025 — เสียงดังในเข่า (crepitus) พบ 36% ของเข่าที่ไม่เจ็บ (systematic review)","https://bjsm.bmj.com/content/59/2/126"],
+  ["Lo et al., Arthritis & Rheumatology 2022 — เดินออกกำลังลดการเกิดปวดเข่าบ่อยในคนข้อเข่าเสื่อม 50+ (1,212 คน ตาม 4 ปี)","https://pubmed.ncbi.nlm.nih.gov/35673829/"],
+  ["White et al., Arthritis Care & Research 2014 — เดิน 6,000 ก้าว/วัน ลดการเกิดเดินลำบากใน 2 ปี","https://pubmed.ncbi.nlm.nih.gov/24909981/"],
+  ["OARSI 2019 — แนวทางรักษาข้อเข่าเสื่อม: การออกกำลังและเดินเป็นหัวใจหลัก","https://pubmed.ncbi.nlm.nih.gov/31278997/"],
+  ["Kutzner et al. 2010 — แรงกดเข่าขณะเดิน/ขึ้นลงบันได (วัดจากข้อเข่าเทียมติดเซ็นเซอร์)","https://pubmed.ncbi.nlm.nih.gov/20542268/"]]],
  ["การจัดตารางออกกำลัง — ความถี่ ปริมาณ โครงสร้าง คาร์ดิโอกับเวท และกี่สัปดาห์ถึงเปลี่ยน",[
   ["Schoenfeld, Ogborn & Krieger 2016 — ความถี่ต่อสัปดาห์กับการสร้างกล้าม (meta-analysis)","https://pubmed.ncbi.nlm.nih.gov/27102172/"],
   ["Schoenfeld, Ogborn & Krieger 2017 — จำนวนเซ็ตต่อสัปดาห์กับการสร้างกล้าม (dose-response)","https://pubmed.ncbi.nlm.nih.gov/27433992/"],
@@ -715,7 +724,7 @@ function buildChecks(boxId,arr,limit){
 function orderBy(arr,first){ var f=first.map(function(id){return arr.filter(function(x){return x.id===id})[0]}).filter(Boolean); return f.concat(arr.filter(function(x){return first.indexOf(x.id)<0})); }
 buildChecks("goalbox",orderBy(GOALS,["general","physique","waist","sleep","bp","sugar","back"]).map(function(g){return {id:"g_"+g.id,lab:g.lab,def:g.def}}),7);
 buildChecks("redbox",REDFLAGS);
-buildChecks("condbox",orderBy(CONDS,["cd_none","cd_htn","cd_dm","cd_lipid","cd_oa","cd_ckd"]),6);
+buildChecks("condbox",orderBy(CONDS,["cd_none","cd_htn","cd_dm","cd_lipid","cd_oa","cd_crep","cd_ckd"]),7);
 buildChecks("medbox",orderBy(MEDS,["md_none","md_bb","md_raas","md_ins","md_met","md_statin","md_other"]),7);
 buildChecks("dietbox",DIETQ,6);
 buildChecks("lifebox",LIFEQ,6);
@@ -747,7 +756,7 @@ function read(){
     age:+$("age").value,ht:+$("ht").value,wt:+$("wt").value,
     waist:+$("waist").value||0,rhr:+$("rhr").value||0,target:+$("target").value||+$("wt").value,
     days:+$("days").value,wake:hhmm("wake"),train:hhmm("train"),bed:hhmm("bed"),
-    liftLvl:$("lift").value,exp:($("exp")&&$("exp").value)||"new",gym:on("c_gym"),job:$("job").value,note:($("note").value||"").trim(),
+    trend:($("trend")&&$("trend").value)||"",liftLvl:$("lift").value,exp:($("exp")&&$("exp").value)||"new",gym:on("c_gym"),job:$("job").value,note:($("note").value||"").trim(),
     routine:($("routine").value||"").trim(),autoTime:on("c_autotime"),
     goals:[],red:[],cond:{},med:{},diet:{},life:{},sports:[]};
   d.lift=d.liftLvl!=="no"; d.heavy=d.liftLvl==="heavy";
@@ -864,6 +873,28 @@ function compute(d){
   } else if(p.dir==="gain"){var sur=d.lift?(d.heavy?400:300):200; if(p.senior)sur=Math.min(sur,300); p.deficit=-sur;target=p.tdee+sur}
   else {p.deficit=0;target=p.tdee}
   if(p.preg||p.insulinBlock){p.deficit=0;target=p.tdee}
+  /* --- calibrate against the real world: a stable weight means intake ≈ true burn, whatever the formula says --- */
+  p.hardGainer=false; p.calib=null;
+  if(d.trend==="same_big"){
+    var bump=r(p.tdee*0.15,10); p.tdee+=bump; /* high NEAT / fidgeting / fast metabolism: formula PAL under-counts these people by 10–20% */
+    if(p.dir==="gain"){ p.hardGainer=true; var sur2=d.lift?500:300; if(p.senior)sur2=300; p.deficit=-sur2; target=p.tdee+sur2; }
+    else if(p.dir==="cut"&&!p.insulinBlock&&!p.preg){ target=p.tdee-p.deficit; if(target<p.floorKcal){target=p.floorKcal;p.deficit=p.tdee-target;p.hitFloor=true} }
+    else target=p.tdee;
+    p.calib="คุณบอกว่ากินเยอะแต่น้ำหนักเท่าเดิม → ร่างกายคุณใช้พลังงานมากกว่าสูตรคำนวณ ระบบบวกให้ "+bump+" แคล/วัน แล้วค่อยตั้งเป้าจากตรงนั้น";
+  } else if(d.trend==="same"&&p.dir==="gain"){ var sur3=d.lift?400:250; if(p.senior)sur3=300; p.deficit=-sur3; target=p.tdee+sur3; }
+  /* --- and learn from the weigh-ins: no movement for 2 weeks in the planned direction → nudge calories, bounded --- */
+  p.autoAdj=0; p.autoWhy="";
+  try{
+    var calcs=loadHist().filter(function(x){return x.type==="calc"&&x.wt&&x.t}).sort(function(a,b){return a.t-b.t});
+    if(calcs.length>=2&&(p.dir==="gain"||p.dir==="cut")){
+      var adj=0, notes=[];
+      for(var ci=1;ci<calcs.length;ci++){ var a0=calcs[ci-1], b0=calcs[ci], dd=(b0.t-a0.t)/864e5; if(dd<10)continue; var dw=b0.wt-a0.wt;
+        if(p.dir==="gain"){ if(dw<0.25&&adj<600){adj+=200; notes.push(Math.round(dd)+" วัน ขึ้น "+dw.toFixed(1)+" กก. → +200");} else if(dw>1.2&&adj>-200){adj-=200; notes.push(Math.round(dd)+" วัน ขึ้นเร็วเกิน "+dw.toFixed(1)+" กก. → −200");} }
+        else { if(dw>-0.2&&adj>-450){adj-=150; notes.push(Math.round(dd)+" วัน ลง "+(-dw).toFixed(1)+" กก. → −150");} }
+      }
+      if(adj){ p.autoAdj=adj; target+=adj; if(p.dir==="cut"&&target<p.floorKcal){target=p.floorKcal;p.hitFloor=true;} p.deficit=p.tdee-target; p.autoWhy=notes.slice(-3).join(" · "); }
+    }
+  }catch(e){}
   p.kcal=r(target,10);
 
   p.months=[];p.monthsToTarget=null;
@@ -1258,6 +1289,12 @@ function buildCondNotes(p,d){
   if(c.cd_htn)n.push(["ความดันโลหิตสูง","โซเดียมต่ำกว่า 2,000 มก./วัน · เวทให้ใช้น้ำหนักปานกลาง <b>หายใจออกตอนออกแรง ห้ามกลั้นหายใจเบ่ง</b> เพราะทำให้ความดันพุ่ง · เลี่ยงยกหนักสุดกำลังครั้งเดียว ยกเหนือหัวหนักๆ และท่าหัวต่ำ · วัดความดันซ้ำเป็นระยะ ไม่ใช่วัดแค่ตอนเริ่ม"]);
   if(c.cd_dm)n.push(["เบาหวาน หรือก่อนเบาหวาน","เปลี่ยนข้าวขาว ⅓ เป็นข้าวกล้อง คือข้อที่ได้ผลที่สุดสำหรับคนไทย · เดิน 10–15 นาทีหลังมื้ออาหาร · <b>ตรวจเท้าทุกวัน</b> ใส่รองเท้าพอดี ห้ามออกกำลังเท้าเปล่าหรือใส่แตะ · น้ำตาลเกิน 250–300 พร้อมมีคีโตน ให้งดออกกำลังวันนั้น"]);
   if(c.cd_ckd||c.cd_ckdunk)n.push(["โรคไต หรือยังไม่รู้ค่าไต","<b>นี่คือเหตุผลที่โปรตีนในแผนนี้ถูกจำกัด</b> แนวทาง KDIGO กำหนดโรคไตระยะ 3–5 ไว้ที่ 0.8 ก./กก. ห้ามเกิน 1.3 ซึ่งต่ำกว่าแผนลดไขมันทั่วไป 2–3 เท่า · ระวังผลไม้โพแทสเซียมสูง กล้วย ส้ม มะละกอ ทุเรียน น้ำมะพร้าว · เลี่ยงอาหารเติมฟอสเฟต เนื้อแปรรูป น้ำอัดลมสีดำ ชีสแผ่น · <b>ไปตรวจค่าไตแล้วเอาผลไปคุยกับหมอก่อนเพิ่มโปรตีน</b>"]);
+  if(c.cd_crep)n.push(["เข่าดังก๊อกแก๊ก แต่ไม่เจ็บ — เดินได้ไหม",
+    "<b>เดินได้ และควรเดิน</b> · เสียงดังในเข่าที่<b>ไม่มีอาการเจ็บ ไม่บวม ไม่ล็อก</b> เรียกว่า crepitus พบในคนเข่าปกติที่ไม่เจ็บถึง <b>36%</b> (รวม 852 เข่า, Couch และคณะ BJSM 2025) มาจากฟองแก๊สในน้ำไขข้อแตกตัว หรือเอ็นสะบักเลื่อนผ่านกระดูก ไม่ใช่กระดูกเสียดสีกันแตกหัก"
+    +" · <b>การเดินไม่ได้ทำให้เข่าพัง แต่กลับช่วย</b> — คนอายุ 50+ ที่มีข้อเข่าเสื่อม 1,212 คน ตาม 4 ปี กลุ่มที่เดินออกกำลังเกิดอาการปวดเข่าบ่อยน้อยกว่ากลุ่มไม่เดินราว 40% และช่องข้อแคบลงช้ากว่า (Lo และคณะ, Arthritis &amp; Rheumatology 2022) · เดิน 6,000 ก้าว/วันขึ้นไปลดโอกาสเดินลำบากใน 2 ปีชัดเจน (White และคณะ 2014) · เหตุผลคือกระดูกอ่อนไม่มีเส้นเลือด มันได้อาหารจาก<b>การถูกกดแล้วคลาย</b>ตอนเดิน ยิ่งไม่ขยับยิ่งบางลง และกล้ามต้นขาที่แข็งแรงขึ้นคือตัวรับแรงแทนเข่า"
+    +" · <b>วิธีเดินสำหรับผู้สูงอายุที่กลัวเข่า:</b> สัปดาห์ 1–2 เดินพื้นราบ 10 นาที วันเว้นวัน ช้าแค่พอเหนื่อยนิด ๆ (เสียงดังระหว่างเดินไม่ต้องสนใจ) · สัปดาห์ 3–4 เพิ่มเป็น 15 นาที ทุกวัน · สัปดาห์ 5–8 เพิ่มครั้งละ 5 นาทีจนถึง 30 นาที หรือแบ่ง 3 ช่วงละ 10 นาทีก็ได้ผลเท่ากัน · <b>ใส่รองเท้าผ้าใบพื้นนุ่ม</b> เลี่ยงรองเท้าแตะ · เดินพื้นราบ ลู่วิ่ง สนามหญ้า หรือห้าง ก่อน ยังไม่ต้องขึ้นเขา/บันได เพราะลงบันไดกดเข่า 3.5 เท่าน้ำหนักตัว เดินราบแค่ 2.6 · ก่อนออกเดิน<b>นั่งเหยียดเข่าตรงค้าง 5 วินาที 10 ครั้ง</b> ให้กล้ามต้นขาตื่น · ถ้ากลัวล้ม ใช้ไม้เท้าเดินป่า 2 ข้าง หรือเดินในสระน้ำซึ่งน้ำหนักลงเข่าเหลือครึ่งเดียว"
+    +" · <b>กฎ 2 ชั่วโมง:</b> ถ้าเจ็บเข่าตอนเดินแต่หายภายใน 2 ชั่วโมงหลังหยุด = ปกติ เดินต่อได้เท่าเดิม · ถ้าเจ็บเกิน 2 ชั่วโมงหรือเจ็บมากขึ้นวันรุ่งขึ้น = ลดเวลาลงครึ่งหนึ่งแล้วค่อยเพิ่มใหม่"
+    +" · <b>ไปหาหมอถ้า:</b> เสียงดังพร้อมเจ็บทุกครั้ง · เข่าบวม ร้อน · เข่าล็อก งอ-เหยียดไม่สุด · เข่าทรุดหรือพับ · เคยเจ็บหลังหกล้ม — พวกนี้ไม่ใช่ crepitus ธรรมดา"]);
   if(c.cd_oa)n.push(["ข้อเข่าหรือข้อสะโพกเสื่อม","ลดน้ำหนัก 1 กก. = เข่าแบกน้อยลงราว 4 กก. · ลดได้ 10% ความเจ็บลดราวครึ่งหนึ่ง ลดได้ 20% ลดต่อได้อีก 25% · ใช้ปั่นจักรยานอยู่กับที่หรือเดินในน้ำแทนการวิ่ง · เลี่ยงบันไดช่วงแรก เพราะลงบันไดกดเข่า 3.5 เท่าน้ำหนักตัว เดินพื้นราบ 2.6 เท่า · เน้นสร้างกล้ามต้นขาและกล้ามสะโพกด้านข้าง"]);
   if(c.cd_heart)n.push(["โรคหัวใจ","<b>ต้องให้หมอตรวจและเข้าโปรแกรมฟื้นฟูหัวใจก่อน ไม่ใช่ออกกำลังเองตามแผนนี้</b> ความหนักที่ปลอดภัยต้องมาจากการทดสอบเดินสายพาน ดูการบีบตัวของหัวใจและจุดที่เริ่มขาดเลือด แบบสอบถามบอกไม่ได้ · โปรแกรมฟื้นฟูหัวใจไม่ใช่การถ่วงเวลา มันคือการรักษาที่ลดการเสียชีวิตได้จริง"]);
   if(c.cd_af)n.push(["หัวใจเต้นผิดจังหวะ หรือใส่เครื่องกระตุ้นหัวใจ","ชีพจรไม่สม่ำเสมอทำให้ตัวเลขโซนหัวใจและนาฬิกาวัดที่ข้อมือใช้ไม่ได้ · ให้ใช้ระดับความเหนื่อยกับการทดสอบพูดแทน และคุยกับหมอเรื่องความหนักที่ปลอดภัย"]);
@@ -1832,6 +1869,8 @@ function render(p,isSample){
     var rows=p.months.slice(0,6).map(function(x){
       return '<tr><td class="lab">เดือนที่ '+x.m+'</td><td class="num">'+x.wIdeal.toFixed(1)+'</td><td class="num">'+x.wReal.toFixed(1)+'</td></tr>'}).join("");
     h.push('<section class="block adv"><div class="block-head"><h2>กี่เดือนจะถึงเป้า</h2><span class="sub">'+d.wt+' → '+p.target+' กก.</span></div><div class="block-body">'
+      +(p.calib?'<div class="flag ok"><b>ปรับตามของจริง</b><span>'+esc(p.calib)+'</span></div>':'')
+      +(p.autoAdj?'<div class="flag ok"><b>ปรับจากประวัติ: '+p.autoAdj+' แคล/วัน</b><span>'+esc(p.autoWhy)+' · ระบบดูผลชั่งจริงของคุณแล้วขยับให้เอง'+(p.hitFloor?' (ถึงขั้นต่ำที่ปลอดภัยแล้ว ไม่ลดต่อ — เพิ่มการขยับแทน)':'')+'</span></div>':'')
       +'<p class="big">กินวันละ <b>'+p.kcal.toLocaleString()+' แคล</b> แล้วลดไม่เกิน <b>'+p.rateKg+' กก./สัปดาห์</b>'
       +(p.monthsToTarget?' จะถึงเป้าราว <b>เดือนที่ '+p.monthsToTarget+'</b> ถ้าคุมได้ตลอด':' เป้าหมายนี้ต้องใช้เวลาเกิน 1 ปี')+'</p>'
       +'<p class="big"><b>แต่เป้าที่ควรยึดจริงๆ คือเดือนที่ 1–3 ก่อน</b> ลดให้ได้ '+(d.wt*0.03).toFixed(1)+'–'+(d.wt*0.05).toFixed(1)+' กก. แค่นี้ความดัน น้ำตาล และไขมันในเลือดก็ดีขึ้นแล้ว ไม่ต้องรอถึงเป้าสุดท้าย</p>'
@@ -1850,6 +1889,8 @@ function render(p,isSample){
     var grows=p.months.slice(0,6).map(function(x){return '<tr><td class="lab">เดือนที่ '+x.m+'</td><td class="num">'+x.wIdeal.toFixed(1)+'</td><td class="num">'+x.wReal.toFixed(1)+'</td></tr>'}).join("");
     h.push('<section class="block adv"><div class="block-head"><h2>กี่เดือนจะถึงเป้า (เพิ่ม)</h2><span class="sub">'+d.wt+' → '+p.target+' กก.</span></div><div class="block-body">'
       +'<p class="big">กินวันละ <b>'+p.kcal.toLocaleString()+' แคล</b> (เกินที่ใช้ '+(-p.deficit)+' แคล) เป้าขึ้น <b>'+p.gainRate+' กก./สัปดาห์</b>'+(p.monthsToTarget?' จะถึงเป้าราว <b>เดือนที่ '+p.monthsToTarget+'</b>':'')+'</p>'
+      +(p.hardGainer?'<div class="flag"><b>โหมดกินเยอะแต่ไม่ขึ้น (hard gainer)</b><span>'+esc(p.calib||"")+' · ตัวเลขที่ให้ (<b>'+p.kcal.toLocaleString()+' แคล</b>) <b>ต้องมากกว่าที่กินอยู่ตอนนี้</b> ไม่ใช่เท่ากับ — เพราะที่กินอยู่คือจุดที่น้ำหนักนิ่ง ถ้ารู้สึกว่า "ก็กินประมาณนี้อยู่แล้ว" แปลว่ายังไม่พอ ให้เพิ่มอีก 300 ทันที · <b>กฎ 2 สัปดาห์:</b> ชั่งทุกจันทร์ ถ้า 2 สัปดาห์ติดไม่ขึ้นเลย ระบบจะบวกให้เอง +200 (ดูบรรทัด "ปรับจากประวัติ") · <b>สิ่งที่ได้ผลกับคนกลุ่มนี้:</b> ดื่มแคลอรี่ (นมเต็มมันเนย 2 แก้ว/วัน ≈ 300 แคล, น้ำปั่นกล้วย+นม+ข้าวโอ๊ต+เนยถั่ว ≈ 600 แคล) เพราะของเหลวไม่ทำให้อิ่มเท่าของแข็ง · เติมน้ำมันมะกอก/เนยถั่ว/ถั่ว 1–2 ช้อนทุกมื้อ (+100–200 แคลโดยไม่ต้องกินเยอะขึ้น) · <b>ลดคาร์ดิโอเหลือ 1 วันสั้น ๆ</b> เอาแรงไปเวทให้หนักและเพิ่มน้ำหนักทุกสัปดาห์ — กล้ามโตจากแรงต้าน ไม่ได้โตจากการกินอย่างเดียว · นอน 7–9 ชม. เพราะโกรทฮอร์โมนหลั่งตอนหลับลึก</span></div>':'')
+      +(p.autoAdj?'<div class="flag ok"><b>ปรับจากประวัติ: '+(p.autoAdj>0?'+':'')+p.autoAdj+' แคล/วัน</b><span>'+esc(p.autoWhy)+' · ระบบดูผลชั่งจริงของคุณแล้วขยับให้เอง ไม่ต้องคำนวณใหม่</span></div>':'')
       +'<p class="big"><b>ขึ้นช้าคือดี</b> เร็วกว่า 0.5 กก./สัปดาห์ ส่วนเกินจะเป็นไขมันเกือบทั้งหมด · กล้ามสร้างได้จำกัดราว 0.25–0.5 กก./เดือนในคนเพิ่งเริ่ม</p>'
       +'<div class="tablewrap"><table><thead><tr><th>เมื่อไหร่</th><th>ถ้ากินถึงทุกวัน (กก.)</th><th>ที่คนส่วนใหญ่ทำได้ (กก.)</th></tr></thead><tbody>'+grows+'</tbody></table></div>'
       +det("ทำไมกินเท่าไหร่ก็ไม่อ้วน — คำตอบที่ตรงไปตรงมา",
