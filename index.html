@@ -2248,8 +2248,8 @@ function paintWeek(p){
   var rows=layout(p);
   var MAN=loadManual(), seen={}, pickOpts=[["","ตามระบบ"],["rest","พัก"]];
   p.sessions.forEach(function(sx,si){ if(seen[sx.what])return; seen[sx.what]=1; pickOpts.push(["s"+si,sx.what]); });
-  p.sessions.forEach(function(sx,si){ if(sx.kind==="cardio"||seen[sx.what+"+c"])return; seen[sx.what+"+c"]=1; pickOpts.push(["s"+si+"+c",sx.what+" + คาร์ดิโอ 20 นาที"]); });
-  pickOpts.push(["walk","เดินเร็ว 30 นาที"]); if(!seen["คาร์ดิโอเบา"])pickOpts.push(["cardio","คาร์ดิโอเบา 30 นาที"]);
+  p.sessions.forEach(function(sx,si){ if(sx.kind==="cardio"||seen[sx.what+"+c"])return; seen[sx.what+"+c"]=1; pickOpts.push(["s"+si+"+c",sx.what+" + คาร์ดิโอเบา 20 นาที"]); if(p.recZone&&p.recZone.vig)pickOpts.push(["s"+si+"+h",sx.what+" + คาร์ดิโอหนัก 15 นาที"]); });
+  pickOpts.push(["c_light","คาร์ดิโอเบา 30–40 นาที"],["c_long","คาร์ดิโอยาว 50–70 นาที"],["c_hard","คาร์ดิโอหนัก 25 นาที (สลับ)"]);
   body.innerHTML=rows.map(function(x,i){
     var what = x.busy ? "พัก (ติดธุระ)" : (x.s?x.s.what+(x.moved?" (ย้ายมา)":""):"พัก");
     if(x.ai&&x.s) what+=" ✎";
@@ -2257,7 +2257,8 @@ function paintWeek(p){
     var warmHTML="", whyHTML="";
     if(x.s&&!x.busy){
       var w=x.s.what||"", k=x.s.kind, why;
-      if(/ดัน/.test(w)) why="อก ไหล่ แขนหลัง → ดันของ ยกของเหนือหัว หุ่นช่วงบน";
+      if(x.s.why) why=x.s.why;
+      else if(/ดัน/.test(w)) why="อก ไหล่ แขนหลัง → ดันของ ยกของเหนือหัว หุ่นช่วงบน";
       else if(/ดึง/.test(w)) why="หลัง แขนหน้า → แก้หลังค่อม ไหล่ห่อ ปวดคอบ่า";
       else if(/Lower/.test(w)||(k==="legs"&&!/Full/.test(w))) why="ขา สะโพก → ลุกนั่ง ขึ้นบันได กันล้ม · กล้ามใหญ่สุด เผาแคลมากสุด";
       else if(/Full body|Full/.test(w)) why="ทั้งตัว → ยกของจากพื้น ทรงตัว แรงบีบมือ";
@@ -2267,6 +2268,8 @@ function paintWeek(p){
       else if(k==="func") why="รักษากล้ามขาและความแข็งแรงในชีวิตประจำวัน → พึ่งตัวเองได้";
       else if(k==="balance") why="ทรงตัว → ลดการล้มได้ราว 1 ใน 4";
       else why="";
+      if(/\+ คาร์ดิโอหนัก/.test(w)) why+=" · แล้วคาร์ดิโอหนักท้ายเซสชัน → ความฟิตสูงสุดในเวลาสั้น";
+      else if(/\+ คาร์ดิโอ/.test(w)) why+=" · แล้วคาร์ดิโอเบาท้ายเซสชัน → เผาไขมันเพิ่มโดยไม่กินแรงเวท";
       if(why) whyHTML='<div class="hint" style="margin:0 0 4px"><b>ได้อะไร:</b> '+esc(why)+'</div>';
       var W=p.warm.W[x.s.kind]||p.warm.W.cardio;
       warmHTML='<details class="mini"><summary>วอร์ม '+p.warm.wmin+' นาทีก่อน — กดดูท่า</summary><div class="dbody">'+linkify(p.warm.raise)+'<br>'+linkify(W)+'</div></details>';
@@ -2603,12 +2606,24 @@ try{ var ua=navigator.userAgent||""; if(/FBAN|FBAV|FB_IAB|Line\/|Instagram|Micro
 var PROF_KEY="fhp-profiles", ACT_KEY="fhp-active", MAN_KEY="fhp-manual";
 function loadManual(){ try{return JSON.parse(localStorage.getItem(MAN_KEY)||"{}")}catch(e){return {}} }
 function saveManual(m){ try{ if(Object.keys(m).length)localStorage.setItem(MAN_KEY,JSON.stringify(m)); else localStorage.removeItem(MAN_KEY); }catch(e){} }
+function cardioKinds(p){ /* three cardio flavours a person can pick by hand — the "why" is spelled out in the day row */
+  var sport=(p.d&&p.d.sports&&p.d.sports[0])||"ปั่นจักรยาน เดินเร็ว หรือว่ายน้ำ";
+  var vigOK=!!(p.recZone&&p.recZone.vig);
+  return {
+    c_light:{what:"คาร์ดิโอเบา",kind:"cardio",mins:30,why:"ฟื้นตัว เลือดไหลเวียน เผาไขมันโดยไม่ล้า → ทำได้แม้วันที่เพลีย",
+      detail:"30–40 นาที โซนเบา: หายใจสบาย คุยได้ยาว ๆ ร้องเพลงได้ · "+sport+" ช้า ๆ · เหมาะกับวันถัดจากเวทหนัก หรือวันที่นอนน้อย · ถ้ารู้สึกเหนื่อย = เร็วไป ให้ช้าลง"},
+    c_long:{what:"คาร์ดิโอยาว",kind:"cardio",mins:60,why:"หัวใจ ปอด ความอึด → เดินไกลไม่หอบ เผาไขมันสะสมมากที่สุดต่อครั้ง",
+      detail:"50–70 นาที โซนปานกลาง: หายใจแรงขึ้น พูดเป็นประโยคได้ ร้องเพลงไม่ได้ · "+sport+" จังหวะคงที่ทั้งชั่วโมง ห้ามเร่งจนพูดไม่ได้ · 20 นาทีแรกร่างกายใช้น้ำตาลในเลือด หลังจากนั้นค่อยดึงไขมันมาใช้มากขึ้น นี่คือเหตุผลที่ต้องยาว · กินข้าวก่อน 1.5–2 ชั่วโมง จิบน้ำทุก 15 นาที"},
+    c_hard:{what:"คาร์ดิโอหนัก",kind:"cardio",mins:25,why:vigOK?"ความฟิตสูงสุด (VO2max) หัวใจแข็งแรงเร็วที่สุด → ขึ้นบันไดไม่หอบ ใช้เวลาน้อย":"⛔ ห้าม: โซนหนักยังไม่เหมาะกับคุณตอนนี้ ให้ใช้คาร์ดิโอเบาหรือยาวแทน",
+      detail:vigOK?"25 นาที แบบสลับ: วอร์ม 5 นาที → เร่ง 1 นาที (พูดได้ทีละไม่กี่คำ) สลับ เบา 2 นาที × 6 รอบ → คูลดาวน์ 5 นาที · "+sport+" · ไม่เกินสัปดาห์ละ 2 ครั้ง และห้ามทำวันติดกัน เพราะหัวใจและข้อต่อต้องการ 48 ชั่วโมงฟื้น · ถ้าเจ็บหน้าอก เวียนหัว หรือหายใจไม่ทันเกิน 2 นาทีหลังหยุด ให้เลิกและปรึกษาหมอ":"ระบบไม่จัดคาร์ดิโอหนักให้คุณในช่วงนี้ ("+((p.recZone&&p.recZone.why)||"ยังอยู่ช่วงเริ่มต้น")+") · วันนี้จัดเป็นคาร์ดิโอเบา 30 นาทีแทน"}
+  };
+}
 function manualSession(p,v){
-  if(v==="walk")return {what:"เดินเร็ว",detail:"เดินเร็ว 30 นาที ให้พูดได้เป็นประโยคแต่ร้องเพลงไม่ได้ · เดินช้า 3 นาทีแรกและ 3 นาทีสุดท้าย",kind:"cardio",mins:30};
-  if(v==="cardio")return {what:"คาร์ดิโอเบา",detail:"ปั่นจักรยาน ว่ายน้ำ หรือเดินเร็ว 30 นาที โซนเบา–กลาง",kind:"cardio",mins:30};
-  var m=/^s(\d+)(\+c)?$/.exec(v); if(!m||!p.sessions[+m[1]])return null;
+  var C=cardioKinds(p); if(C[v])return C[v];
+  var m=/^s(\d+)(\+c|\+h)?$/.exec(v); if(!m||!p.sessions[+m[1]])return null;
   var sx=p.sessions[+m[1]]; if(!m[2])return sx;
-  return Object.assign({},sx,{what:sx.what+" + คาร์ดิโอ",detail:sx.detail+" · แล้วต่อด้วยคาร์ดิโอเบา 20 นาที (เวทก่อน คาร์ดิโอหลัง — ถ้าทำคาร์ดิโอก่อนจะยกได้น้อยลง)",mins:(sx.mins||45)+20});
+  var hard=m[2]==="+h"&&!!(p.recZone&&p.recZone.vig);
+  return Object.assign({},sx,{what:sx.what+(hard?" + คาร์ดิโอหนัก":" + คาร์ดิโอเบา"),detail:sx.detail+(hard?" · แล้วต่อด้วยคาร์ดิโอหนักแบบสลับ 15 นาที (เร่ง 1 เบา 2 × 4 รอบ) — เวทก่อนเสมอ":" · แล้วต่อด้วยคาร์ดิโอเบา 20 นาที (เวทก่อน คาร์ดิโอหลัง — ถ้าทำคาร์ดิโอก่อนจะยกได้น้อยลง)"),mins:(sx.mins||45)+(hard?15:20)});
 }
 function loadProfiles(){ try{return JSON.parse(localStorage.getItem(PROF_KEY)||"{}")}catch(e){return {}} }
 function saveProfiles(o){ try{localStorage.setItem(PROF_KEY,JSON.stringify(o))}catch(e){} }
