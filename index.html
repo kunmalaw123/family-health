@@ -186,14 +186,15 @@ footer b{color:var(--ink-soft)}
   <p class="lede" style="font-family:var(--font-display);font-size:18px;line-height:1.5;color:var(--ink);max-width:40ch"><b>ตอนสุขภาพดี คุณมีความฝันเป็นร้อยอย่าง</b><br>วันที่สุขภาพเสีย คุณจะเหลือความฝันแค่อย่างเดียว — ขอให้สุขภาพดี</p>
   <p class="lede">หน้านี้ใช้เวลากรอก 3 นาที แล้วจะบอกว่าร่างกายคุณอยู่ตรงไหน ต้องกินเท่าไหร่ ขยับยังไง พักแค่ไหน และ<b>เริ่มจากอะไรก่อนในสัปดาห์แรก</b> — ไม่ต้องเคยออกกำลัง ไม่ต้องรู้ศัพท์อะไรมาก่อน</p>
   <p class="lede"><b>ไม่ต้องอ่านหมด</b> — แต่ละหัวข้อบอกสั้นๆ ก่อนว่าต้องทำอะไร อยากรู้เหตุผลค่อยกดขยาย · กรอกให้พ่อแม่หรือคนในบ้านแทนก็ได้</p>
-  <p class="hint" style="margin-top:8px"><b>ข้อมูลที่กรอกอยู่ในเครื่องของคุณเท่านั้น</b> ไม่ถูกส่งไปไหนจนกว่าจะกดปุ่ม "บันทึกให้กันดู" ด้วยตัวเอง · ใช้สำหรับผู้ใหญ่อายุ 20 ปีขึ้นไป · นี่คือข้อมูลเพื่อการดูแลสุขภาพทั่วไป ไม่ใช่การวินิจฉัยหรือรักษาโรค</p>
+  <p class="hint" style="margin-top:8px"><b>ข้อมูลเก็บในเครื่องคุณ และสำรองขึ้นเซิร์ฟเวอร์ของบ้านเมื่อเชื่อม "รหัสบ้าน"</b> ใครมีรหัสบ้านเดียวกันจึงจะเห็น · ใช้สำหรับผู้ใหญ่อายุ 20 ปีขึ้นไป · นี่คือข้อมูลเพื่อการดูแลสุขภาพทั่วไป ไม่ใช่การวินิจฉัยหรือรักษาโรค</p>
 
-  <div id="inappWarn" class="warnbox" hidden style="margin-top:16px;border-left-color:var(--stop);color:var(--stop)"><b>คุณเปิดจากในแอป (Facebook / LINE / Instagram)</b> — เบราว์เซอร์ในแอปพวกนี้มีที่เก็บข้อมูลแยกต่างหากและมักล้างทิ้ง ทำให้ต้องกรอกใหม่ทุกครั้ง · <b>วิธีแก้:</b> กดปุ่ม ··· มุมบน → "เปิดใน Safari/Chrome" → แล้วกด "เพิ่มไปยังหน้าจอโฮม" ใช้จากไอคอนนั้นทุกครั้ง ข้อมูลจะไม่หาย · หรือกด "สำรองข้อมูล (คัดลอกรหัส)" ก่อนปิดทุกครั้ง</div>
+  <div id="inappWarn" class="warnbox" hidden style="margin-top:16px;border-left-color:var(--stop);color:var(--stop)"><b>คุณเปิดจากในแอป (Facebook / LINE / Instagram)</b> — เบราว์เซอร์ในแอปพวกนี้มีที่เก็บข้อมูลแยกต่างหากและมักล้างทิ้ง ทำให้ต้องกรอกใหม่ทุกครั้ง · <b>วิธีแก้:</b> กดปุ่ม ··· มุมบน → "เปิดใน Safari/Chrome" → แล้วกด "เพิ่มไปยังหน้าจอโฮม" ใช้จากไอคอนนั้นทุกครั้ง · <b>หรือเชื่อม "รหัสบ้าน" ด้านล่าง</b> แล้วเปิดจากแอปไหนข้อมูลก็ไม่หาย</div>
   <div class="sheet" id="profBar" style="padding:14px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:end">
     <label style="flex:1;min-width:160px">ใครกำลังกรอก<select id="profSel"></select></label>
     <button type="button" class="btn-ghost" id="profAdd">+ เพิ่มคนในบ้าน</button>
     <button type="button" class="btn-ghost" id="profDel" style="color:var(--stop)">ลบคนนี้</button>
     <span class="note" style="flex-basis:100%;margin:0">คนในบ้านใช้มือถือเครื่องนี้ร่วมกันได้ กด "+ เพิ่มคนในบ้าน" แล้วกรอกของตัวเอง · ทุกคนจะอยู่ในหมวด "ครอบครัว"</span>
+    <div id="houseBox" style="flex-basis:100%;border-top:1px solid var(--line);padding-top:12px;margin-top:4px"></div>
   </div>
   <form class="sheet" id="f">
     <fieldset>
@@ -2635,7 +2636,7 @@ function familyBlock(){
     +'<div class="tablewrap"><table><thead><tr><th>ใคร</th><th>น้ำหนัก</th><th>เปลี่ยนจากเริ่มต้น</th><th>สัปดาห์ล่าสุด</th><th>อัปเดต</th></tr></thead><tbody>'
     +rows.map(function(r){ return '<tr'+(r.active?' style="background:var(--accent-soft)"':'')+'><td class="lab">'+esc(r.name)+(r.active?' <span class="hint">(กำลังดู)</span>':'')+(r.baseline?'':' <span class="hint">ยังไม่ยืนยันจุดเริ่มต้น</span>')+'</td><td class="num">'+(r.wt||"–")+'</td><td class="num" style="color:'+(r.delta===null?'var(--ink-faint)':r.delta<0?'var(--accent-ink)':r.delta>0?'var(--warn)':'inherit')+'">'+(r.delta===null?"–":(r.delta>0?"+":"")+r.delta.toFixed(1)+" กก.")+'</td><td>'+(r.days===null?"ยังไม่บันทึก":"ออก "+r.days+" วัน · "+esc(r.feel))+'</td><td class="hint">'+(r.updated?new Date(r.updated).toLocaleDateString("th-TH",{day:"numeric",month:"short"}):"")+(r.active?'':' · <button type="button" class="showmore profGo" data-id="'+r.id+'">ดู</button>')+'</td></tr>'; }).join("")
     +'</tbody></table></div>'
-    +'<p class="hint">ข้อมูลทุกคนอยู่ในเครื่องนี้เท่านั้น · คนที่กรอกจากเครื่องตัวเอง ให้เขากด "สำรองข้อมูล" ส่งรหัสมา แล้วคุณกด "กู้คืนจากรหัส" ที่นี่ ระบบจะเพิ่มเป็นคนใหม่ให้เอง</p>'
+    +'<p class="hint">ถ้าเชื่อม "รหัสบ้าน" ไว้ (กล่องด้านบนสุด) คนที่กรอกจากเครื่องตัวเองจะโผล่ที่นี่เองเมื่อกด "ดึงข้อมูลล่าสุด" · ถ้ายังไม่เชื่อม ให้เขากด "สำรองข้อมูล" ส่งรหัสมา แล้วกด "กู้คืนจากรหัส"</p>'
     +'</div></section>';
 }
 ensureProfile();
@@ -2643,7 +2644,7 @@ $("profSel").addEventListener("change",function(){ switchProfile($("profSel").va
 $("profAdd").addEventListener("click",function(){ addProfile(""); });
 $("profDel").addEventListener("click",function(){
   var b=$("profDel"); if(b.getAttribute("data-arm")!=="1"){ b.setAttribute("data-arm","1"); b.textContent="กดอีกครั้งเพื่อลบคนนี้ทั้งหมด"; setTimeout(function(){b.removeAttribute("data-arm");b.textContent="ลบคนนี้";},4000); return; }
-  var P=loadProfiles(), id=activeId(); delete P[id]; saveProfiles(P); var next=Object.keys(P)[0]; if(next){ loadIntoActive(next); restoreForm(); paintTarget(); syncTime(); applyLock(); run(false); } paintProfiles(); b.textContent="ลบคนนี้";
+  var P=loadProfiles(), id=activeId(); delete P[id]; saveProfiles(P); houseTomb(id); var next=Object.keys(P)[0]; if(next){ loadIntoActive(next); restoreForm(); paintTarget(); syncTime(); applyLock(); run(false); } paintProfiles(); b.textContent="ลบคนนี้";
 });
 $("f").addEventListener("input",function(){ clearTimeout(window.__profT); window.__profT=setTimeout(function(){ snapshotActive(); paintProfiles(); },800); });
 
@@ -2656,6 +2657,102 @@ paintProfiles();
 syncLiftWarn();
 
 $("f").addEventListener("submit",saveForm);
+
+/* ---- house sync: every profile on this device is mirrored to a shared "house" row (Supabase) keyed by a 6-digit code ---- */
+var SB_URL="https://annghltbdaioypahwsyt.supabase.co", SB_KEY="sb_publishable_oCWtZX0gK3O53bn__jg13g_nAPVez5z";
+var HOUSE_KEY="fhp-house", TOMB_KEY="fhp-deleted";
+function houseCode(){ try{return localStorage.getItem(HOUSE_KEY)||""}catch(e){return ""} }
+function setHouse(c){ try{ if(c)localStorage.setItem(HOUSE_KEY,c); else localStorage.removeItem(HOUSE_KEY); }catch(e){} }
+function loadTomb(){ try{return JSON.parse(localStorage.getItem(TOMB_KEY)||"{}")}catch(e){return {}} }
+function saveTomb(t){ try{localStorage.setItem(TOMB_KEY,JSON.stringify(t))}catch(e){} }
+function houseTomb(id){ var t=loadTomb(); t[id]=Date.now(); saveTomb(t); houseSchedule(); }
+function sbRpc(fn,args,keep){
+  return fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",keepalive:!!keep,headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(args)})
+    .then(function(r){ if(!r.ok) return r.text().then(function(t){throw new Error(r.status+" "+t)}); return r.text().then(function(t){return t?JSON.parse(t):null}); });
+}
+var syncState={st:"",t:0,msg:""};
+function setSync(st,msg){ syncState={st:st,t:Date.now(),msg:msg||""}; paintHouse(); }
+function houseMerge(remote){ /* newest wins per profile; tombstones beat older profiles */
+  var P=loadProfiles(), T=loadTomb(), R=(remote&&remote.profiles)||{}, RT=(remote&&remote.deleted)||{}, changed=false;
+  Object.keys(RT).forEach(function(id){ if(!T[id]||RT[id]>T[id]){T[id]=RT[id];} });
+  Object.keys(R).forEach(function(id){ var r=R[id]; if(!r)return; if(T[id]&&T[id]>(r.updated||0))return; if(!P[id]||(r.updated||0)>(P[id].updated||0)){ P[id]=r; changed=true; } });
+  Object.keys(P).forEach(function(id){ if(T[id]&&T[id]>(P[id].updated||0)){ delete P[id]; changed=true; } });
+  saveProfiles(P); saveTomb(T); return changed;
+}
+function houseData(){ return {v:1,profiles:loadProfiles(),deleted:loadTomb(),device:navigator.userAgent.slice(0,60)}; }
+var houseT=null, housePulling=false;
+function houseSchedule(){ if(!houseCode())return; clearTimeout(houseT); houseT=setTimeout(housePush,2500); }
+function housePush(keep){
+  var c=houseCode(); if(!c)return Promise.resolve();
+  clearTimeout(houseT);
+  return sbRpc("house_put",{p_code:c,p_data:houseData()},keep).then(function(){ setSync("ok"); }).catch(function(e){ setSync("err",String(e.message||e)); });
+}
+function housePull(){
+  var c=houseCode(); if(!c)return Promise.resolve(false);
+  housePulling=true; setSync("busy");
+  return sbRpc("house_get",{p_code:c}).then(function(data){
+    var changed=houseMerge(data);
+    var P=loadProfiles(), id=activeId();
+    /* a fresh device makes an empty placeholder profile before joining — drop it so it doesn't clutter the house */
+    var R=(data&&data.profiles)||{};
+    if(Object.keys(R).length){ Object.keys(P).forEach(function(k){ var pr=P[k]; var nm=(pr.name||"").trim(); if(!R[k]&&(nm===""||nm==="ไม่มีชื่อ"||nm==="ตัวอย่าง")&&!(pr.hist&&pr.hist.length)){ delete P[k]; changed=true; } }); saveProfiles(P); }
+    if(!P[id]){ var ids=Object.keys(P).sort(function(a,b){return (P[b].updated||0)-(P[a].updated||0)}); if(ids.length){ loadIntoActive(ids[0]); changed=true; } }
+    else if(changed){ loadIntoActive(id); }
+    if(changed){ restoreForm(); paintTarget(); syncTime(); applyLock(); run(false); }
+    paintProfiles(); setSync("ok"); housePulling=false;
+    return housePush().then(function(){return changed});
+  }).catch(function(e){ housePulling=false; setSync("err",String(e.message||e)); return false; });
+}
+function houseNewCode(tries){
+  tries=tries||0; var c=String(Math.floor(100000+Math.random()*900000));
+  setSync("busy");
+  return sbRpc("house_get",{p_code:c}).then(function(d){ if(d&&tries<5) return houseNewCode(tries+1); setHouse(c); return housePush().then(function(){ paintHouse(); return c; }); })
+    .catch(function(e){ setSync("err",String(e.message||e)); });
+}
+function houseLink(){ var c=houseCode(); return location.origin+location.pathname+(c?"?house="+c:""); }
+function fmtClock(t){ var d=new Date(t); return (d.getHours()<10?"0":"")+d.getHours()+":"+(d.getMinutes()<10?"0":"")+d.getMinutes(); }
+function paintHouse(){
+  var box=$("houseBox"); if(!box)return; var c=houseCode();
+  if(!c){
+    box.innerHTML='<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">'
+      +'<div style="flex-basis:100%"><b>ข้อมูลยังอยู่แค่ในเครื่องนี้</b> <span class="hint">— เชื่อม "รหัสบ้าน" แล้วข้อมูลจะเก็บบนเซิร์ฟเวอร์ เปิดจากเครื่องไหน แอปไหนก็เจอของทุกคน</span></div>'
+      +'<button type="button" class="btn-primary" id="houseNew" style="padding:10px 16px">สร้างรหัสบ้านใหม่</button>'
+      +'<label style="flex:1;min-width:150px">มีรหัสบ้านแล้ว ใส่ตรงนี้<input id="houseIn" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6 หลัก"></label>'
+      +'<button type="button" class="btn-ghost" id="houseJoin">เชื่อม</button>'
+      +(syncState.st==="err"?'<span class="hint" style="flex-basis:100%;color:var(--stop)">เชื่อมไม่ได้: '+esc(syncState.msg)+'</span>':'')
+      +'</div>';
+    $("houseNew").addEventListener("click",function(){ houseNewCode(); });
+    $("houseJoin").addEventListener("click",function(){ var v=($("houseIn").value||"").replace(/\D/g,""); if(v.length!==6){ $("houseIn").focus(); return; } setHouse(v); housePull().then(function(){ statusEl.textContent="เชื่อมรหัสบ้าน "+v+" แล้ว"; }); });
+    return;
+  }
+  var st=syncState.st==="ok"?'<span style="color:var(--ok)">✓ ซิงก์แล้ว '+fmtClock(syncState.t)+'</span>'
+        :syncState.st==="busy"?'<span class="hint">กำลังซิงก์…</span>'
+        :syncState.st==="err"?'<span style="color:var(--stop)">⚠ ซิงก์ไม่ได้ ('+esc(syncState.msg.slice(0,60))+') ข้อมูลยังอยู่ในเครื่อง จะลองใหม่เมื่อบันทึกครั้งถัดไป</span>'
+        :'<span class="hint">ยังไม่ได้ซิงก์</span>';
+  box.innerHTML='<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">'
+    +'<div style="flex:1;min-width:200px"><b>รหัสบ้าน <span style="font-size:22px;letter-spacing:2px">'+esc(c)+'</span></b><br>'+st+'</div>'
+    +'<button type="button" class="btn-ghost" id="houseShare">คัดลอกลิงก์ให้คนในบ้าน</button>'
+    +'<button type="button" class="btn-ghost" id="houseSync">ดึงข้อมูลล่าสุด</button>'
+    +'<button type="button" class="showmore" id="houseLeave" style="color:var(--ink-faint)">ตัดการเชื่อม</button>'
+    +'<span class="note" style="flex-basis:100%;margin:0">ส่งลิงก์นี้ให้คนในบ้าน เปิดแล้วจะเชื่อมบ้านเดียวกันอัตโนมัติ ไม่ต้องพิมพ์รหัส · ทุกครั้งที่กดบันทึก ข้อมูลจะขึ้นเซิร์ฟเวอร์เอง</span>'
+    +'</div>';
+  $("houseShare").addEventListener("click",function(){ var b=$("houseShare"), url=houseLink();
+    var done=function(){ b.textContent="คัดลอกแล้ว ✓"; setTimeout(function(){b.textContent="คัดลอกลิงก์ให้คนในบ้าน"},2500); };
+    if(navigator.share){ navigator.share({title:"แผนสุขภาพครอบครัว",text:"เปิดลิงก์นี้แล้วกรอกของตัวเองได้เลย รหัสบ้าน "+c,url:url}).then(done).catch(function(){}); return; }
+    if(navigator.clipboard){ navigator.clipboard.writeText(url).then(done); } else { window.prompt("คัดลอกลิงก์นี้",url); }
+  });
+  $("houseSync").addEventListener("click",function(){ housePull(); });
+  $("houseLeave").addEventListener("click",function(){ var b=$("houseLeave"); if(b.getAttribute("data-arm")!=="1"){ b.setAttribute("data-arm","1"); b.textContent="กดอีกครั้งเพื่อตัดการเชื่อม (ข้อมูลในเครื่องยังอยู่)"; setTimeout(function(){ if(b.isConnected){b.removeAttribute("data-arm");b.textContent="ตัดการเชื่อม";} },4000); return; } setHouse(""); syncState={st:"",t:0,msg:""}; paintHouse(); });
+}
+(function(){
+  var _snap=snapshotActive; snapshotActive=function(){ _snap(); if(!housePulling) houseSchedule(); };
+  var q=null; try{ q=new URLSearchParams(location.search).get("house"); }catch(e){}
+  if(q&&/^\d{6}$/.test(q)){ setHouse(q); try{ history.replaceState(null,"",location.pathname); }catch(e){} }
+  paintHouse();
+  if(houseCode()){ housePull(); }
+  document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="hidden"&&houseCode()){ _snap(); housePush(true); } });
+  window.addEventListener("online",function(){ if(houseCode()) housePush(); });
+})();
 
 (async function(){
   var dl=null; try{dl=await window.claude?.use?.("downloads")}catch(e){}
