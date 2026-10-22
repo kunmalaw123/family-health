@@ -292,10 +292,6 @@ footer b{color:var(--ink-soft)}
       </div>
       <p class="hint" style="margin-bottom:-3px">ติ๊กสิ่งที่ตรงกับชีวิตตอนนี้</p>
       <div class="checks two" id="lifebox"></div>
-      <label>เล่าวันปกติของคุณเพิ่มเติม (ไม่บังคับ) — ตื่นแล้วทำอะไร ช่วงบ่าย เย็น ก่อนนอน มีอะไรที่ตารางไม่แน่นอน
-        <textarea id="routine" placeholder="เช่น ตื่น 6 โมง กินกาแฟ ดูข่าว ไปตลาด กลับมาทำกับข้าว บ่ายนอน เย็นดูละคร บางวันต้องไปรับหลาน ตารางไม่แน่นอน..." style="min-height:84px"></textarea>
-      </label>
-      <p class="hint">ถ้าล็อกอินอยู่ จะมีปุ่ม "ให้ช่วยวิเคราะห์" โผล่หลังกดคำนวณ · ถ้าไม่ได้ล็อกอิน ข้อความนี้จะติดไปกับปุ่ม "คัดลอกผล" ให้ส่งต่อได้</p>
     </fieldset>
 
     <fieldset>
@@ -322,7 +318,7 @@ footer b{color:var(--ink-soft)}
       <p class="step">ขั้นที่ 8</p>
       <legend>การกินตอนนี้</legend>
       <div class="checks two" id="dietbox"></div>
-      <label>อยากบอกอะไรเพิ่ม (ไม่บังคับ)<textarea id="note" placeholder="เช่น แพ้อาหารอะไร เข่าไม่ดีข้างไหน อยากออกกำลังที่บ้าน"></textarea></label>
+      <label>โน้ตส่วนตัว (ไม่บังคับ — แสดงในแผนและรูปสรุป ไม่ใช้คำนวณ)<textarea id="note" placeholder="เช่น แพ้กุ้ง · เข่าซ้ายไม่ดี · เบอร์หมอ"></textarea></label>
     </fieldset>
 
     <div class="actions">
@@ -366,7 +362,7 @@ footer b{color:var(--ink-soft)}
   <footer>
     <p><b>ความคลาดเคลื่อนที่ต้องรู้</b> — ชีพจรสูงสุดที่คำนวณได้คลาดเคลื่อน ±10–12 ครั้ง/นาที รายบุคคลอาจต่างถึง ±20–25 ให้ใช้ความรู้สึกเหนื่อยกับการทดสอบพูดควบคู่เสมอ · แคลอรี่ที่คำนวณเป็นค่าประมาณ ให้ปรับตามน้ำหนักจริงที่ขยับใน 2–3 สัปดาห์</p>
     <p><b>เครื่องมือนี้ทำอะไร และไม่ทำอะไร</b> — ทำ: คำนวณแคลอรี่ โปรตีน โซนหัวใจ และตารางออกกำลังจากแนวทางสากล สำหรับผู้ใหญ่ทั่วไปที่ต้องการดูแลสุขภาพ · ไม่ทำ: วินิจฉัยโรค ปรับยา หรือแทนการพบแพทย์ · ไม่เหมาะกับ: คนที่มีอาการเตือนในขั้นที่ 5 เด็กอายุต่ำกว่า 20 และคนที่หมอสั่งให้ออกกำลังภายใต้การดูแลเท่านั้น · ถ้ามีโรคประจำตัว ตั้งครรภ์ ให้นมบุตร หรือกินยาประจำ ให้เอาแผนนี้ไปให้แพทย์หรือเภสัชกรดูก่อนเริ่ม โดยเฉพาะส่วนวิตามิน</p>
-    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-22.4</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
+    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-22.5</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
   </footer>
 </div>
 
@@ -766,7 +762,7 @@ function read(){
     waist:+$("waist").value||0,rhr:+$("rhr").value||0,bf:+($("bf")&&$("bf").value)||0,muscle:+($("muscle")&&$("muscle").value)||0,target:+$("target").value||+$("wt").value,
     days:+$("days").value,wake:hhmm("wake"),train:hhmm("train"),bed:hhmm("bed"),
     trend:($("trend")&&$("trend").value)||"",liftLvl:$("lift").value,exp:($("exp")&&$("exp").value)||"new",gym:on("c_gym"),job:$("job").value,note:($("note").value||"").trim(),
-    routine:($("routine").value||"").trim(),autoTime:on("c_autotime"),
+    routine:(($("routine")&&$("routine").value)||"").trim(),autoTime:on("c_autotime"),
     goals:[],red:[],cond:{},med:{},diet:{},life:{},sports:[]};
   d.lift=d.liftLvl!=="no"; d.heavy=d.liftLvl==="heavy";
   SPORTS.forEach(function(s){if(on(s.id))d.sports.push(s)});
@@ -848,6 +844,9 @@ function compute(d){
   p.whtr=d.waist?d.waist/d.ht:0;
   p.ibw=idealWt(d);
   var bmr=10*d.wt+6.25*d.ht-5*d.age+(d.sex==="m"?5:-161);
+  p.bmrWhy="สูตร Mifflin-St Jeor จากน้ำหนัก ส่วนสูง อายุ เพศ";
+  if(d.bf>0&&d.bf<70){ var lbm=d.wt*(1-d.bf/100); var km=370+21.6*lbm; /* Katch-McArdle: BMR tracks lean mass, not total weight */
+    if(Math.abs(km-bmr)>=40){ p.bmrWhy="สูตร Katch-McArdle จากมวลไร้ไขมัน "+lbm.toFixed(1)+" กก. (แม่นกว่าสูตรทั่วไปเมื่อรู้ไขมัน%) — ต่างจากสูตรทั่วไป "+(km>bmr?"+":"")+Math.round(km-bmr)+" แคล"; bmr=km; } }
   p.bmr=r(bmr,5);
   var pal=d.days<=2?1.375:d.days<=4?1.5:1.65;
   if(!d.lift&&d.days<=2)pal=1.3;
@@ -864,19 +863,29 @@ function compute(d){
   var h2=Math.pow(d.ht/100,2);
   p.underweight=p.bmi<18.5;
   if(hasGoal(p,"gain")&&p.bmi<23){ var g=Math.max(tgt, r(Math.min(Math.max(21*h2,d.wt*1.05),22.9*h2),0.5)); if(g>d.wt+0.4)tgt=g; }
+  p.bfTarget=null;
+  if(d.bf>0&&d.bf<70&&!targetTouchedFlag()){ /* with body fat known, the sensible target is a body-fat %, not a BMI number */
+    var lean=d.wt*(1-d.bf/100), goalBF=d.sex==="m"?(p.senior?20:15):(p.senior?30:24);
+    if(d.bf>goalBF+1){ var bft=r(lean/(1-goalBF/100),0.5); p.bfTarget={bf:goalBF,wt:bft}; if(bft<tgt||p.targetAdj) tgt=Math.max(bft,p.minWt); else if(Math.abs(bft-tgt)<=3) tgt=bft; }
+    else if(d.bf<goalBF-3&&hasGoal(p,"gain")){ p.bfTarget={bf:goalBF,wt:tgt}; }
+    else if(!hasGoal(p,"gain")&&tgt<d.wt-0.4){ tgt=d.wt; p.bfTarget={bf:goalBF,wt:d.wt,ok:true}; } /* already lean: BMI target would strip muscle */
+  }
   p.target=tgt; p.toLose=d.wt-tgt;
   p.dir=p.toLose>0.4?"cut":(p.toLose<-0.4?"gain":"keep");
   if(p.underweight&&p.dir==="cut"){p.target=p.minWt;p.toLose=d.wt-p.minWt;p.dir="gain"}
 
   var ratePct=p.senior?0.0035:(p.bmi>=27.5?0.009:0.006);
+  if(d.bf>0&&d.bf<70){ ratePct=p.senior?0.0035:(d.bf>=28?0.009:d.bf>=20?0.007:0.005); } /* leaner people must lose slower or muscle goes too */
   p.rateKg=r(d.wt*ratePct,0.05);
 
   p.floorKcal=Math.max(d.sex==="m"?1500:1200,r(bmr*1.05,10));
   p.hitFloor=false;
+  p.sleepCap=false; try{ var sls=loadHist().filter(function(x){return x.type==="log"&&x.sleepH>0}).slice(-3); if(sls.length>=2){ var avS=sls.reduce(function(a,x){return a+x.sleepH},0)/sls.length; if(avS<6.5) p.sleepCap=true; } }catch(e){}
   var target;
   p.insulinBlock = !!d.med.md_ins;   // deficit without dose adjustment = hypoglycaemia risk; prescriber must set this
   if(p.dir==="cut" && !p.insulinBlock){
     p.deficit=Math.min(p.bmi>=27.5?600:400,p.rateKg*7700/7,p.tdee*0.25);
+    if(p.sleepCap) p.deficit=Math.min(p.deficit,350); /* short sleep: a big deficit mostly costs muscle (Nedeltcheva 2010) */
     target=p.tdee-p.deficit;
     if(target<p.floorKcal){target=p.floorKcal;p.deficit=p.tdee-target;p.hitFloor=true}
   } else if(p.dir==="gain"){var sur=d.lift?(d.heavy?400:300):200; if(p.senior)sur=Math.min(sur,300); p.deficit=-sur;target=p.tdee+sur}
@@ -933,7 +942,7 @@ function compute(d){
         if(p.dir==="gain")ppk=d.lift?1.8:1.4}
   p.ppk=ppk;p.protein=r(basis*ppk,5);
   p.leanMass=null;p.fatMass=null;
-  if(d.bf>0&&d.bf<70){ p.fatMass=r(d.wt*d.bf/100,0.1); p.leanMass=r(d.wt-p.fatMass,0.1);
+  if(d.bf>0&&d.bf<70){ p.fatMass=+(d.wt*d.bf/100).toFixed(1); p.leanMass=+(d.wt-p.fatMass).toFixed(1);
     if(!p.kidney){ var lppk=p.senior?1.6:(p.dir==="cut"?2.1:(p.dir==="gain"?2.0:1.8)); var lp=r(p.leanMass*lppk,5); if(Math.abs(lp-p.protein)>=10){ p.protein=lp; p.pnote="คิดจากมวลไร้ไขมัน "+p.leanMass+" กก. × "+lppk+" ก."; } } }
   if(p.protein*4>p.kcal*0.40)p.protein=r(p.kcal*0.40/4,5);
   p.meals=p.dir==="gain"?(p.senior?4:5):(d.days>=4?4:(p.senior?3:4));
@@ -964,6 +973,12 @@ function compute(d){
   p.zMethod=p.rhrOK?"คิดจากกำลังสำรองหัวใจ ซึ่งแม่นกว่า เพราะใช้ชีพจรขณะพักจริงของคุณ":"คิดจาก % ของชีพจรสูงสุด · ใส่ชีพจรขณะพักจะแม่นขึ้น";
 
   p.lowImpact=p.bmi>=27.5||d.cond.cd_oa||d.cond.cd_neuro;
+  p.smi=null; p.muscleNote="";
+  if(d.muscle>0){ p.smi=+(d.muscle/Math.pow(d.ht/100,2)).toFixed(1); var cut=d.sex==="m"?7.0:5.7; /* AWGS 2019 appendicular SMI cutoffs ≈ scaled to Garmin whole-body muscle mass ×0.45 */
+    var appx=+(p.smi*0.73).toFixed(1); /* appendicular ≈ 73% of whole-body skeletal muscle (Janssen 2000) */
+    p.muscleNote = appx<cut ? "มวลกล้ามเนื้อต่ำกว่าเกณฑ์ (ดัชนี ≈ "+appx+" เทียบเกณฑ์ "+cut+") — เวทต้องเป็นตัวหลักของแผน และโปรตีนต่อมื้อห้ามต่ำกว่า 25–30 ก. · ถ้าอายุ 60+ ควรไปตรวจแรงบีบมือ"
+      : appx<cut*1.15 ? "มวลกล้ามเนื้ออยู่ขอบล่าง (ดัชนี ≈ "+appx+") — รักษาไว้ด้วยเวท 2 วัน/สัปดาห์ขึ้นไป อย่าลดแคลเร็ว"
+      : "มวลกล้ามเนื้อดี (ดัชนี ≈ "+appx+" สูงกว่าเกณฑ์ "+cut+") — เป็นเกราะป้องกันเบาหวานและกระดูกหัก เป้าคือรักษาไว้ขณะลดไขมัน"; }
   p.level=getLevel();
   p.adv=d.lift&&d.exp==="adv"; p.mid=d.lift&&d.exp==="mid";
   if(p.adv) p.level=Math.max(p.level,2); else if(p.mid) p.level=Math.max(p.level,1);
@@ -1335,6 +1350,11 @@ function buildFlags(p,d){
   if(p.senior&&p.dir==="cut"&&!d.lift)f.push(["อายุ 60 ขึ้นไป ลดน้ำหนักโดยไม่เล่นเวท = อันตราย","งานวิจัยในผู้สูงอายุอ้วน 1 ปี พบว่า ลดอาหารอย่างเดียว มวลกล้ามหาย 5% กระดูกสะโพกหาย 3% · ถ้าทำควบคู่การออกกำลัง เหลือ 3% กับ 1% · <b>กลับไปติ๊ก \"เล่นเวทได้\" ในขั้นที่ 3 แล้วคำนวณใหม่</b> หรือเปลี่ยนเป็นรักษาน้ำหนักไปก่อน"]);
   if(!d.lift&&!(p.senior&&p.dir==="cut"))f.push(["ไม่เล่นเวท — ยังดีกว่าไม่ออกกำลังเลยมาก แต่ต้องรู้ข้อเสีย",
     "<b>ข้อเสีย:</b> หลังอายุ 50 กล้ามเนื้อหายราว 1% ต่อปีถ้าไม่มีแรงต้าน และกระดูกจะไม่แข็งขึ้นจากการเดินอย่างเดียว · <b>ที่ยังได้:</b> การเดินสม่ำเสมอลดความเสี่ยงหัวใจและเบาหวานชัดเจน การฝึกทรงตัวลดการล้มได้ 24% ซึ่งเวทอย่างเดียวทำไม่ได้ · <b>แผนนี้จึงจัด \"กิจวัตรแรงต้าน\" ให้แทน</b> — ลุกนั่งจากเก้าอี้ ขึ้นบันได ถือของเดิน พวกนี้คือแรงต้านจริงโดยไม่ต้องยกอะไร · และ<b>โปรตีนยิ่งสำคัญขึ้น</b> เพราะเป็นตัวเดียวที่เหลือที่ช่วยรักษากล้าม · ถ้าวันหนึ่งพร้อม ยางยืดเส้นละไม่ถึง 100 บาทคือจุดเริ่มที่ง่ายที่สุด"]);
+  if(p.bmrWhy&&/Katch/.test(p.bmrWhy))f.push(["พลังงานพื้นฐานคิดจากมวลไร้ไขมัน",p.bmrWhy+" · แคลที่กำหนดจึงตรงกับตัวคุณมากกว่าคนน้ำหนักเท่ากันแต่กล้ามน้อยกว่า"]);
+  if(p.bfTarget&&p.bfTarget.ok)f.push(["ไขมัน "+d.bf+"% อยู่ในเกณฑ์ดีแล้ว — ไม่ต้องลดน้ำหนัก","BMI "+p.bmi.toFixed(1)+" ของคุณมาจากกล้าม ไม่ใช่ไขมัน (มวลไร้ไขมัน "+p.leanMass+" กก.) ระบบจึงตั้งเป้าเป็นรักษาน้ำหนักเดิม · ถ้าอยากหุ่นชัดขึ้น ให้เน้นเพิ่มกล้ามด้วยเวทและโปรตีน ไม่ใช่ลดแคล"]);
+  if(p.bfTarget&&!p.bfTarget.ok&&p.dir==="cut")f.push(["เป้าหมายคิดจากไขมัน% ไม่ใช่ BMI","ไขมันตอนนี้ "+d.bf+"% มวลไร้ไขมัน "+p.leanMass+" กก. → ถ้ารักษากล้ามไว้ครบ ไขมัน "+p.bfTarget.bf+"% จะอยู่ที่ราว "+p.bfTarget.wt+" กก. · ตัวเลขนี้แม่นกว่า BMI เพราะคนกล้ามเยอะ BMI จะหลอกว่าอ้วน · อัตราลดจำกัดไว้ที่ "+p.rateKg+" กก./สัปดาห์ ยิ่งไขมันต่ำยิ่งต้องลดช้า ไม่งั้นเสียกล้าม"]);
+  if(p.muscleNote)f.push(["มวลกล้ามเนื้อ "+d.muscle+" กก.",p.muscleNote]);
+  if(p.sleepCap)f.push(["นอนน้อย 2–3 สัปดาห์ล่าสุด → จำกัดส่วนขาดแคลไว้ที่ 350","งานวิจัย Nedeltcheva 2010: แคลเท่ากัน นอน 5.5 ชม. เสียกล้ามมากกว่านอน 8.5 ชม. ถึง 60% และไขมันลดน้อยกว่าครึ่ง · ลดแรงตอนนอนไม่พอ = ได้กล้ามหายแทนไขมัน · แก้การนอนก่อนแล้วระบบจะคืนส่วนขาดให้เอง"]);
   if(d.sleep<6)f.push(["นอนน้อยเกินไป","นอน "+d.sleep+" ชั่วโมง ทำให้ฮอร์โมนความหิวพุ่งและลดไขมันยากขึ้นมาก แก้เรื่องนอนก่อนจะง่ายกว่าลดอาหารเพิ่ม"]);
   else if(d.sleep<7)f.push(["นอนยังไม่พอ","ขาดอีก "+(7-d.sleep).toFixed(1)+" ชั่วโมง ขยับเวลาเข้านอนเร็วขึ้นทีละ 15 นาที ได้ผลจริงกว่าเปลี่ยนรวดเดียว"]);
   if(p.hitFloor)f.push(["แคลอรี่ชนขั้นต่ำแล้ว","นี่คือจุดต่ำสุดที่ยังได้สารอาหารครบ อยากลดเร็วขึ้นให้เพิ่มการเคลื่อนไหว ไม่ใช่ลดอาหารอีก"]);
@@ -1649,6 +1669,7 @@ function summaryCard(p,d){
   return '<section class="block" id="summary"><div class="block-head"><h2>สรุปแผนของ '+esc(d.name)+' — หน้าเดียว</h2><span class="sub">'+thDate(today())+' · แคปหน้านี้ไว้ดูได้เลย</span></div><div class="block-body" style="font-size:14px">'
     +'<div class="tiles" style="margin-bottom:12px">'
     +'<div class="tile"><div class="k">BMI</div><div class="v">'+p.bmi.toFixed(1)+'</div><div class="u">'+bmiLabel(p.bmi)+(p.target!==d.wt?' · เป้า '+p.target+' กก.':'')+'</div></div>'
+    +(p.leanMass!==null?'<div class="tile"><div class="k">ไขมัน</div><div class="v">'+d.bf+'%</div><div class="u">ไขมัน '+p.fatMass+' กก. · ไร้ไขมัน '+p.leanMass+' กก.'+(p.bfTarget?' · เป้า '+p.bfTarget.bf+'% ≈ '+p.bfTarget.wt+' กก.':'')+'</div></div>':'')
     +'<div class="tile"><div class="k">กินวันละ</div><div class="v">'+p.kcal.toLocaleString()+'</div><div class="u">แคล</div></div>'
     +'<div class="tile"><div class="k">โปรตีน</div><div class="v">'+p.protein+'</div><div class="u">ก. · มื้อละ '+p.perMeal+' × '+p.meals+'</div></div>'
     +'<div class="tile"><div class="k">ข้าว</div><div class="v">'+riceLadles(p)+'</div><div class="u">ทัพพี/วัน</div></div>'
@@ -2527,7 +2548,7 @@ function toICS(p){
 
 /* ================= wiring ================= */
 /* ---------- target weight suggestion ---------- */
-var targetTouched=false;
+var targetTouched=false; function targetTouchedFlag(){ return targetTouched; }
 function suggestTarget(){
   var sex=$("sex").value,age=+$("age").value,ht=+$("ht").value,wt=+$("wt").value;
   if(!ht||!wt)return null;
@@ -2956,7 +2977,7 @@ function paintHouse(){
   });
   b.addEventListener("click",async function(){
     var p=lastPlan||run(false), d=p.d;
-    if(!d.routine){ statusEl.textContent="พิมพ์เล่าวันปกติของคุณในขั้นที่ 4 ก่อน แล้วกดอีกครั้ง"; $("routine").focus(); return; }
+    if(!d.routine){ statusEl.textContent="ฟีเจอร์นี้ใช้ได้เฉพาะเวอร์ชันบน claude.ai"; return; }
     var box=$("analysisBox");
     if(!box){ box=document.createElement("section"); box.className="block"; box.id="analysisBox"; out.insertBefore(box,out.firstChild.nextSibling); }
     box.innerHTML='<div class="block-head"><h2>วิเคราะห์ชีวิตประจำวันจากที่เล่ามา</h2><span class="sub">กำลังอ่าน…</span></div><div class="block-body"><p class="hint">กำลังวิเคราะห์ ใช้เวลาไม่กี่วินาที</p></div>';
