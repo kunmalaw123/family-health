@@ -366,7 +366,7 @@ footer b{color:var(--ink-soft)}
   <footer>
     <p><b>ความคลาดเคลื่อนที่ต้องรู้</b> — ชีพจรสูงสุดที่คำนวณได้คลาดเคลื่อน ±10–12 ครั้ง/นาที รายบุคคลอาจต่างถึง ±20–25 ให้ใช้ความรู้สึกเหนื่อยกับการทดสอบพูดควบคู่เสมอ · แคลอรี่ที่คำนวณเป็นค่าประมาณ ให้ปรับตามน้ำหนักจริงที่ขยับใน 2–3 สัปดาห์</p>
     <p><b>เครื่องมือนี้ทำอะไร และไม่ทำอะไร</b> — ทำ: คำนวณแคลอรี่ โปรตีน โซนหัวใจ และตารางออกกำลังจากแนวทางสากล สำหรับผู้ใหญ่ทั่วไปที่ต้องการดูแลสุขภาพ · ไม่ทำ: วินิจฉัยโรค ปรับยา หรือแทนการพบแพทย์ · ไม่เหมาะกับ: คนที่มีอาการเตือนในขั้นที่ 5 เด็กอายุต่ำกว่า 20 และคนที่หมอสั่งให้ออกกำลังภายใต้การดูแลเท่านั้น · ถ้ามีโรคประจำตัว ตั้งครรภ์ ให้นมบุตร หรือกินยาประจำ ให้เอาแผนนี้ไปให้แพทย์หรือเภสัชกรดูก่อนเริ่ม โดยเฉพาะส่วนวิตามิน</p>
-    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-22.3</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
+    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-22.4</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
   </footer>
 </div>
 
@@ -1596,9 +1596,9 @@ function progressBlock(p){
 
   var fresh=h.length<2;
   var logForm='<div class="grid2" style="align-items:end"><label>น้ำหนักวันนี้ (กก.)<input type="number" id="wkwt" step="0.1" min="30" max="250" inputmode="decimal" placeholder="'+(last?last.wt:"")+'"></label><label>รอบเอว (ซม.)<input type="number" id="wkwaist" step="0.5" min="40" max="200" inputmode="decimal" placeholder="'+(last&&last.waist?last.waist:"")+'"></label></div>'
-    +'<details class="mini" style="margin-top:8px"><summary>มีเครื่องชั่งมวลร่างกาย / นาฬิกา? ใส่เพิ่ม (ไม่บังคับ)</summary><div class="dbody"><div class="grid2" style="align-items:end"><label>ไขมัน (%)<input type="number" id="wkbf" step="0.1" min="3" max="70" inputmode="decimal" placeholder="'+(last&&last.bf?last.bf:"ไม่รู้ก็เว้นว่าง")+'"></label><label>มวลกล้ามเนื้อ (กก.)<input type="number" id="wkmuscle" step="0.1" min="10" max="100" inputmode="decimal" placeholder="'+(last&&last.muscle?last.muscle:"ไม่รู้ก็เว้นว่าง")+'"></label></div>'
+    +'<div style="margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px"><p style="margin:0 0 8px"><b>จากเครื่องชั่งมวลร่างกาย / นาฬิกา</b> <span class="hint">— ไม่มีก็เว้นว่างทุกช่อง</span></p><div class="grid2" style="align-items:end"><label>ไขมัน (%)<input type="number" id="wkbf" step="0.1" min="3" max="70" inputmode="decimal" placeholder="'+(last&&last.bf?last.bf:"ไม่รู้ก็เว้นว่าง")+'"></label><label>มวลกล้ามเนื้อ (กก.)<input type="number" id="wkmuscle" step="0.1" min="10" max="100" inputmode="decimal" placeholder="'+(last&&last.muscle?last.muscle:"ไม่รู้ก็เว้นว่าง")+'"></label></div>'
     +'<div class="grid2" style="align-items:end;margin-top:8px"><label>HRV เฉลี่ย 7 วัน (ms)<input type="number" id="wkhrv" step="1" min="5" max="250" inputmode="numeric" placeholder="จาก Garmin/Apple Watch · ไม่มีเว้นว่าง"></label><label>นอนเฉลี่ย (ชม./คืน)<input type="number" id="wksleep" step="0.1" min="2" max="14" inputmode="decimal" placeholder="ไม่รู้ก็เว้นว่าง"></label></div>'
-    +'<p class="hint" style="margin:6px 0 0">ค่าไขมันจากเครื่องชั่งบ้านคลาด ±3–5% ใช้ดูแนวโน้มเท่านั้น · HRV ที่ตกเกิน 10% จากค่าเฉลี่ย = ฟื้นตัวไม่พอ ระบบจะเตือน</p></div></details>'
+    +'<p class="hint" style="margin:6px 0 0">ค่าไขมันจากเครื่องชั่งบ้านคลาด ±3–5% ใช้ดูแนวโน้มเท่านั้น · HRV ที่ตกเกิน 10% จากค่าเฉลี่ย = ฟื้นตัวไม่พอ ระบบจะเตือน</p></div>'
     +'<div class="grid2" style="align-items:end;margin-top:10px"><label>สัปดาห์นี้ออกกำลังได้กี่วัน<select id="wkdone">'+[0,1,2,3,4,5,6,7].map(function(n){return '<option value="'+n+'"'+(n===3?' selected':'')+'>'+n+' วัน</option>'}).join("")+'</select></label>'
     +'<label>รู้สึกยังไง<select id="wkfeel"><option>ดีขึ้น</option><option selected>เท่าเดิม</option><option>แย่ลง / เหนื่อยเกิน</option><option>เจ็บ ต้องพัก</option></select></label></div>'
     +'<label style="margin-top:10px">อยากจดอะไรไว้ (ไม่บังคับ)<input type="text" id="wknote" placeholder="เช่น เข่าซ้ายตึงวันพุธ · เริ่มเดินหลังข้าวเย็นได้ 4 วัน"></label>'
@@ -2591,7 +2591,7 @@ function applyLock(){
   }
   ["wt","waist","bf","muscle"].forEach(function(id){ var el=$(id); if(!el)return; el.readOnly=locked; el.style.opacity=locked?".6":""; });
   var n=$("calcnote"); if(n){ n.hidden=locked; }
-  var lk=$("locknote"); if(!lk){ lk=document.createElement("span"); lk.id="locknote"; lk.className="hint"; $("wt").parentNode.appendChild(lk); }
+  var lk=$("locknote"); if(!lk){ lk=document.createElement("p"); lk.id="locknote"; lk.className="hint"; lk.style.margin="4px 0 0"; var row=$("wt").parentNode.parentNode; row.parentNode.insertBefore(lk,row.nextSibling); }
   lk.innerHTML=locked?'ล็อกไว้เป็นจุดเริ่มต้น · อัปเดตน้ำหนักที่กล่อง "ความคืบหน้า" ด้านล่าง · <a href="#" id="unlock">กรอกผิด? เริ่มใหม่</a>':"";
   var u=$("unlock"); if(u){ u.addEventListener("click",function(e){ e.preventDefault();
     if(u.getAttribute("data-arm")!=="1"){ u.setAttribute("data-arm","1"); u.textContent="กดอีกครั้ง: ล้างจุดเริ่มต้นและประวัติทั้งหมด แล้วกรอกใหม่"; u.style.color="var(--stop)"; setTimeout(function(){ if(u.isConnected&&u.getAttribute("data-arm")==="1"){u.removeAttribute("data-arm"); u.textContent="กรอกผิด? เริ่มใหม่"; u.style.color="";} },5000); return; }
