@@ -210,6 +210,11 @@ footer b{color:var(--ink-soft)}
         <label>ชีพจรขณะพัก (ครั้ง/นาที)<input type="number" id="rhr" value="" min="30" max="130" inputmode="numeric" placeholder="ไม่รู้ก็เว้นว่าง"></label>
       </div>
       <p class="hint">ชีพจรขณะพัก: นั่งนิ่ง 5 นาที จับชีพจรที่ข้อมือ 30 วินาที คูณ 2 · ใส่แล้วโซนหัวใจจะแม่นขึ้นมาก</p>
+      <div class="grid2" style="margin-top:8px">
+        <label>ไขมันในร่างกาย (%)<input type="number" id="bf" value="" min="3" max="70" step="0.1" inputmode="decimal" placeholder="ไม่รู้ก็เว้นว่าง"></label>
+        <label>มวลกล้ามเนื้อ (กก.)<input type="number" id="muscle" value="" min="10" max="100" step="0.1" inputmode="decimal" placeholder="ไม่รู้ก็เว้นว่าง"></label>
+      </div>
+      <p class="hint"><b>2 ช่องนี้ไม่บังคับ</b> — ใส่เฉพาะคนที่มีเครื่องชั่งวัดมวลร่างกาย (Garmin Index, Withings, InBody) · ชั่งเช้าตื่นนอนหลังเข้าห้องน้ำ ก่อนกินดื่ม · ใส่แล้วโปรตีนจะคิดจากมวลไร้ไขมันของคุณจริง และกราฟจะแยกให้เห็นว่าที่ลดคือไขมันหรือกล้าม · ไม่มีเครื่องก็ข้ามไป ระบบใช้น้ำหนักกับรอบเอวแทน</p>
     </fieldset>
 
     <fieldset>
@@ -361,7 +366,7 @@ footer b{color:var(--ink-soft)}
   <footer>
     <p><b>ความคลาดเคลื่อนที่ต้องรู้</b> — ชีพจรสูงสุดที่คำนวณได้คลาดเคลื่อน ±10–12 ครั้ง/นาที รายบุคคลอาจต่างถึง ±20–25 ให้ใช้ความรู้สึกเหนื่อยกับการทดสอบพูดควบคู่เสมอ · แคลอรี่ที่คำนวณเป็นค่าประมาณ ให้ปรับตามน้ำหนักจริงที่ขยับใน 2–3 สัปดาห์</p>
     <p><b>เครื่องมือนี้ทำอะไร และไม่ทำอะไร</b> — ทำ: คำนวณแคลอรี่ โปรตีน โซนหัวใจ และตารางออกกำลังจากแนวทางสากล สำหรับผู้ใหญ่ทั่วไปที่ต้องการดูแลสุขภาพ · ไม่ทำ: วินิจฉัยโรค ปรับยา หรือแทนการพบแพทย์ · ไม่เหมาะกับ: คนที่มีอาการเตือนในขั้นที่ 5 เด็กอายุต่ำกว่า 20 และคนที่หมอสั่งให้ออกกำลังภายใต้การดูแลเท่านั้น · ถ้ามีโรคประจำตัว ตั้งครรภ์ ให้นมบุตร หรือกินยาประจำ ให้เอาแผนนี้ไปให้แพทย์หรือเภสัชกรดูก่อนเริ่ม โดยเฉพาะส่วนวิตามิน</p>
-    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-22.2</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
+    <p class="hint" style="margin-top:14px">เวอร์ชัน <b id="appver">2026-10-22.3</b> · ถ้าเลขไม่ตรงกับที่แจ้ง ให้ปิดแท็บแล้วเปิดลิงก์ใหม่</p>
   </footer>
 </div>
 
@@ -758,7 +763,7 @@ function fmt(m){m=((m%1440)+1440)%1440;var h=Math.floor(m/60),n=m%60;return (h<1
 function read(){
   var d={name:($("name").value||"").trim()||"ไม่ระบุชื่อ",sex:$("sex").value,
     age:+$("age").value,ht:+$("ht").value,wt:+$("wt").value,
-    waist:+$("waist").value||0,rhr:+$("rhr").value||0,target:+$("target").value||+$("wt").value,
+    waist:+$("waist").value||0,rhr:+$("rhr").value||0,bf:+($("bf")&&$("bf").value)||0,muscle:+($("muscle")&&$("muscle").value)||0,target:+$("target").value||+$("wt").value,
     days:+$("days").value,wake:hhmm("wake"),train:hhmm("train"),bed:hhmm("bed"),
     trend:($("trend")&&$("trend").value)||"",liftLvl:$("lift").value,exp:($("exp")&&$("exp").value)||"new",gym:on("c_gym"),job:$("job").value,note:($("note").value||"").trim(),
     routine:($("routine").value||"").trim(),autoTime:on("c_autotime"),
@@ -927,6 +932,9 @@ function compute(d){
         if(hasGoal(p,"physique")&&d.lift)ppk=p.bmi>=27.5?1.8:2.0;
         if(p.dir==="gain")ppk=d.lift?1.8:1.4}
   p.ppk=ppk;p.protein=r(basis*ppk,5);
+  p.leanMass=null;p.fatMass=null;
+  if(d.bf>0&&d.bf<70){ p.fatMass=r(d.wt*d.bf/100,0.1); p.leanMass=r(d.wt-p.fatMass,0.1);
+    if(!p.kidney){ var lppk=p.senior?1.6:(p.dir==="cut"?2.1:(p.dir==="gain"?2.0:1.8)); var lp=r(p.leanMass*lppk,5); if(Math.abs(lp-p.protein)>=10){ p.protein=lp; p.pnote="คิดจากมวลไร้ไขมัน "+p.leanMass+" กก. × "+lppk+" ก."; } } }
   if(p.protein*4>p.kcal*0.40)p.protein=r(p.kcal*0.40/4,5);
   p.meals=p.dir==="gain"?(p.senior?4:5):(d.days>=4?4:(p.senior?3:4));
   p.perMeal=r(p.protein/p.meals,5);
@@ -1511,7 +1519,7 @@ function saveHist(h){ try{localStorage.setItem(HIST_KEY,JSON.stringify(h.slice(-
 function today(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function thDate(iso){ var p=iso.split("-"); return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"}); }
 function logMeasure(p,weekly){
-  var d=p.d, h=loadHist(), e={type:"calc",date:today(),t:Date.now(),wt:d.wt,waist:d.waist||null,bmi:+p.bmi.toFixed(1),kcal:p.kcal,protein:p.protein,days:d.days,sleep:d.sleep,goals:d.goals.map(function(g){return g.lab.split(" (")[0]})};
+  var d=p.d, h=loadHist(), e={type:"calc",date:today(),t:Date.now(),wt:d.wt,waist:d.waist||null,bf:d.bf||null,muscle:d.muscle||null,bmi:+p.bmi.toFixed(1),kcal:p.kcal,protein:p.protein,days:d.days,sleep:d.sleep,goals:d.goals.map(function(g){return g.lab.split(" (")[0]})};
   var calcs=h.filter(function(x){return x.type==="calc"});
   if(!calcs.length){ e.baseline=true; h.push(e); saveHist(h); return h; }
   var base=calcs[0];
@@ -1520,8 +1528,8 @@ function logMeasure(p,weekly){
   if(i>=0)h[i]=e; else h.push(e);
   saveHist(h); return h;
 }
-function logWeek(days,feel,note){
-  var h=loadHist(), e={type:"log",date:today(),t:Date.now(),done:days,feel:feel,note:note||""};
+function logWeek(days,feel,note,hrv,sleep){
+  var h=loadHist(), e={type:"log",date:today(),t:Date.now(),done:days,feel:feel,note:note||"",hrv:hrv||null,sleepH:sleep||null};
   var i=-1; h.forEach(function(x,k){if(x.type==="log"&&x.date===e.date)i=k});
   if(i>=0)h[i]=e; else h.push(e);
   saveHist(h); return h;
@@ -1557,6 +1565,11 @@ function progressBlock(p){
     var dw=last.wt-first.wt, dc=(last.waist&&first.waist)?last.waist-first.waist:null, daysSpan=Math.max(1,Math.round((last.t-first.t)/86400000));
     sum.push("<b>จุดเริ่มต้น "+thDate(first.date)+": "+first.wt+" กก."+(first.waist?" เอว "+first.waist:"")+"</b> → วันนี้ "+last.wt+" กก."+(last.waist?" เอว "+last.waist:"")+" · ผ่านมา "+daysSpan+" วัน: น้ำหนัก "+(dw>0?"+":"")+dw.toFixed(1)+" กก."+(dc!==null?" · รอบเอว "+(dc>0?"+":"")+dc.toFixed(0)+" ซม.":"")+(p.target&&p.target<first.wt?" · เหลืออีก "+Math.max(0,last.wt-p.target).toFixed(1)+" กก. ถึงเป้า "+p.target+" กก.":""));
   }
+  var fb=calcs.filter(function(x){return x.bf>0}); if(fb.length>=2){ var a0=fb[0], b0=fb[fb.length-1], fa=a0.wt*a0.bf/100, fbm=b0.wt*b0.bf/100, la=a0.wt-fa, lb=b0.wt-fbm, dfat=fbm-fa, dlean=lb-la;
+    sum.push("<b>องค์ประกอบร่างกาย:</b> ไขมัน "+(dfat>0?"+":"")+dfat.toFixed(1)+" กก. · มวลไร้ไขมัน "+(dlean>0?"+":"")+dlean.toFixed(1)+" กก. ("+a0.bf+"% → "+b0.bf+"%) — "+(dfat<-0.3&&dlean>=-0.3?"<b>ลดไขมันโดยไม่เสียกล้าม นี่คือผลที่ต้องการ</b>":dfat<-0.3&&dlean<-0.5?"<b>กล้ามหายไปด้วย</b> → โปรตีนไม่ถึงหรือกินน้อยเกิน เพิ่มโปรตีน 1 มื้อและอย่าลดข้าวเพิ่ม":dlean>0.3&&dfat<=0.3?"<b>กล้ามเพิ่ม ไขมันไม่เพิ่ม</b> ดีมาก":dfat>0.5?"ไขมันเพิ่ม → ลดส่วนเกินวันพัก":"ยังเปลี่ยนไม่ชัด ดูต่ออีก 2–4 สัปดาห์ (เครื่องชั่งบ้านคลาด ±3%)")); }
+  var hv=logs.filter(function(x){return x.hrv>0}); if(hv.length>=2){ var lastH=hv[hv.length-1].hrv, prevH=hv.slice(-5,-1), avgH=prevH.reduce(function(a,x){return a+x.hrv},0)/prevH.length, dh=(lastH-avgH)/avgH*100;
+    sum.push("<b>HRV:</b> ล่าสุด "+lastH+" ms (เฉลี่ยก่อนหน้า "+avgH.toFixed(0)+") "+(dh<=-10?"<b>ตกเกิน 10% = ร่างกายฟื้นไม่ทัน</b> สัปดาห์นี้ลดคาร์ดิโอหนักออก นอนให้ถึง 7 ชม. ก่อนค่อยกลับ · ไม่ใช่สัญญาณให้กินน้อยลง":dh>=8?"ขึ้นชัด = ฟื้นตัวดี พร้อมเพิ่มความหนักได้":"คงที่ ปกติดี")); }
+  var sl=logs.filter(function(x){return x.sleepH>0}); if(sl.length){ var avgS=sl.slice(-4).reduce(function(a,x){return a+x.sleepH},0)/Math.min(4,sl.length); if(avgS<6.5) sum.push("<b>นอนเฉลี่ย "+avgS.toFixed(1)+" ชม.</b> — ต่ำกว่า 7 ชม. ทำให้ลดไขมันช้าลงและเสียกล้ามมากขึ้นชัดเจน (งานวิจัย: นอน 5.5 vs 8.5 ชม. ในแคลเท่ากัน ไขมันลดน้อยกว่า 55%) นี่อาจเป็นตัวถ่วงหลัก ไม่ใช่อาหาร"); }
   var lw=logs.filter(function(x){return x.t>=now-wk}), pw=logs.filter(function(x){return x.t<now-wk&&x.t>=now-2*wk});
   if(pw.length){ var L=pw[pw.length-1]; sum.push("<b>อาทิตย์ที่แล้ว:</b> ออกกำลัง "+L.done+" วัน · รู้สึก"+L.feel+(L.note?" · \""+esc(L.note)+"\"":"")); }
   if(lw.length){ var N=lw[lw.length-1]; sum.push("<b>อาทิตย์นี้:</b> ออกกำลัง "+N.done+" วัน · รู้สึก"+N.feel+(N.note?" · \""+esc(N.note)+"\"":"")); }
@@ -1576,13 +1589,16 @@ function progressBlock(p){
     if(x.type==="calc"){
       var prev=null; for(var k=i+1;k<arr.length;k++){if(arr[k].type==="calc"){prev=arr[k];break}}
       var d=prev?(x.wt-prev.wt):0;
-      return '<tr><td class="lab">'+thDate(x.date)+'<br>'+(x.baseline?'<span class="hint">จุดเริ่มต้น (ล็อก)</span>':'<button type="button" class="showmore histdel" data-t="'+x.t+'">ลบ</button>')+'</td><td>'+(x.baseline?'เริ่มต้น':'คำนวณใหม่')+'</td><td class="num">'+x.wt+' กก.'+(prev?' <span style="color:'+(d<0?'var(--accent-ink)':d>0?'var(--warn)':'var(--ink-faint)')+'">('+(d>0?'+':'')+d.toFixed(1)+')</span>':'')+(x.waist?' · เอว '+x.waist:'')+'</td><td>'+x.kcal.toLocaleString()+' แคล · โปรตีน '+x.protein+' · '+x.days+' วัน/สัปดาห์'+(x.goals&&x.goals.length?'<br><span class="hint">'+esc(x.goals.join(", "))+'</span>':'')+'</td></tr>';
+      return '<tr><td class="lab">'+thDate(x.date)+'<br>'+(x.baseline?'<span class="hint">จุดเริ่มต้น (ล็อก)</span>':'<button type="button" class="showmore histdel" data-t="'+x.t+'">ลบ</button>')+'</td><td>'+(x.baseline?'เริ่มต้น':'คำนวณใหม่')+'</td><td class="num">'+x.wt+' กก.'+(prev?' <span style="color:'+(d<0?'var(--accent-ink)':d>0?'var(--warn)':'var(--ink-faint)')+'">('+(d>0?'+':'')+d.toFixed(1)+')</span>':'')+(x.waist?' · เอว '+x.waist:'')+(x.bf?' · ไขมัน '+x.bf+'%':'')+(x.muscle?' · กล้าม '+x.muscle+' กก.':'')+'</td><td>'+(x.kcal||0).toLocaleString()+' แคล · โปรตีน '+x.protein+' · '+x.days+' วัน/สัปดาห์'+(x.goals&&x.goals.length?'<br><span class="hint">'+esc(x.goals.join(", "))+'</span>':'')+'</td></tr>';
     }
-    return '<tr><td class="lab">'+thDate(x.date)+'<br><button type="button" class="showmore histdel" data-t="'+x.t+'">ลบ</button></td><td>บันทึกสัปดาห์</td><td class="num">'+x.done+' วัน</td><td>รู้สึก'+esc(x.feel)+(x.note?' · '+esc(x.note):'')+'</td></tr>';
+    return '<tr><td class="lab">'+thDate(x.date)+'<br><button type="button" class="showmore histdel" data-t="'+x.t+'">ลบ</button></td><td>บันทึกสัปดาห์</td><td class="num">'+x.done+' วัน</td><td>รู้สึก'+esc(x.feel)+(x.hrv?' · HRV '+x.hrv:'')+(x.sleepH?' · นอน '+x.sleepH+' ชม.':'')+(x.note?' · '+esc(x.note):'')+'</td></tr>';
   }).join("");
 
   var fresh=h.length<2;
   var logForm='<div class="grid2" style="align-items:end"><label>น้ำหนักวันนี้ (กก.)<input type="number" id="wkwt" step="0.1" min="30" max="250" inputmode="decimal" placeholder="'+(last?last.wt:"")+'"></label><label>รอบเอว (ซม.)<input type="number" id="wkwaist" step="0.5" min="40" max="200" inputmode="decimal" placeholder="'+(last&&last.waist?last.waist:"")+'"></label></div>'
+    +'<details class="mini" style="margin-top:8px"><summary>มีเครื่องชั่งมวลร่างกาย / นาฬิกา? ใส่เพิ่ม (ไม่บังคับ)</summary><div class="dbody"><div class="grid2" style="align-items:end"><label>ไขมัน (%)<input type="number" id="wkbf" step="0.1" min="3" max="70" inputmode="decimal" placeholder="'+(last&&last.bf?last.bf:"ไม่รู้ก็เว้นว่าง")+'"></label><label>มวลกล้ามเนื้อ (กก.)<input type="number" id="wkmuscle" step="0.1" min="10" max="100" inputmode="decimal" placeholder="'+(last&&last.muscle?last.muscle:"ไม่รู้ก็เว้นว่าง")+'"></label></div>'
+    +'<div class="grid2" style="align-items:end;margin-top:8px"><label>HRV เฉลี่ย 7 วัน (ms)<input type="number" id="wkhrv" step="1" min="5" max="250" inputmode="numeric" placeholder="จาก Garmin/Apple Watch · ไม่มีเว้นว่าง"></label><label>นอนเฉลี่ย (ชม./คืน)<input type="number" id="wksleep" step="0.1" min="2" max="14" inputmode="decimal" placeholder="ไม่รู้ก็เว้นว่าง"></label></div>'
+    +'<p class="hint" style="margin:6px 0 0">ค่าไขมันจากเครื่องชั่งบ้านคลาด ±3–5% ใช้ดูแนวโน้มเท่านั้น · HRV ที่ตกเกิน 10% จากค่าเฉลี่ย = ฟื้นตัวไม่พอ ระบบจะเตือน</p></div></details>'
     +'<div class="grid2" style="align-items:end;margin-top:10px"><label>สัปดาห์นี้ออกกำลังได้กี่วัน<select id="wkdone">'+[0,1,2,3,4,5,6,7].map(function(n){return '<option value="'+n+'"'+(n===3?' selected':'')+'>'+n+' วัน</option>'}).join("")+'</select></label>'
     +'<label>รู้สึกยังไง<select id="wkfeel"><option>ดีขึ้น</option><option selected>เท่าเดิม</option><option>แย่ลง / เหนื่อยเกิน</option><option>เจ็บ ต้องพัก</option></select></label></div>'
     +'<label style="margin-top:10px">อยากจดอะไรไว้ (ไม่บังคับ)<input type="text" id="wknote" placeholder="เช่น เข่าซ้ายตึงวันพุธ · เริ่มเดินหลังข้าวเย็นได้ 4 วัน"></label>'
@@ -2299,7 +2315,9 @@ function render(p,isSample){
   var ws=$("wksave"); if(ws){ ws.addEventListener("click",function(){
     var nw=parseFloat($("wkwt").value), nwa=parseFloat($("wkwaist").value), changed=false;
     if(nw>0){ $("wt").value=nw; changed=true; } if(nwa>0){ $("waist").value=nwa; changed=true; }
-    logWeek(+$("wkdone").value,$("wkfeel").value,$("wknote").value.trim());
+    var nbf=parseFloat(($("wkbf")||{}).value), nmu=parseFloat(($("wkmuscle")||{}).value), nhrv=parseFloat(($("wkhrv")||{}).value), nsl=parseFloat(($("wksleep")||{}).value);
+    if(nbf>0){ $("bf").value=nbf; changed=true; } if(nmu>0){ $("muscle").value=nmu; changed=true; }
+    logWeek(+$("wkdone").value,$("wkfeel").value,$("wknote").value.trim(),nhrv>0?nhrv:null,nsl>0?nsl:null);
     var y=window.scrollY;
     if(changed){ saveForm(); var p2=compute(read()); logMeasure(p2,true); run(false); statusEl.textContent="บันทึกแล้ว และคำนวณแผนใหม่จากน้ำหนัก "+(nw||p2.d.wt)+" กก."; }
     else { statusEl.textContent="บันทึกสัปดาห์นี้แล้ว"; render(p,false); }
@@ -2568,9 +2586,10 @@ function applyLock(){
   var locked=hasBaseline();
   if(locked){ /* the form's weight/waist must always mirror the latest saved entry — one source of truth */
     var calcs=loadHist().filter(function(x){return x.type==="calc"}), last=calcs[calcs.length-1];
-    if(last){ if(last.wt&&+$("wt").value!==+last.wt)$("wt").value=last.wt; if(last.waist&&+$("waist").value!==+last.waist)$("waist").value=last.waist; saveForm(); }
+    if(last){ if(last.wt&&+$("wt").value!==+last.wt)$("wt").value=last.wt; if(last.waist&&+$("waist").value!==+last.waist)$("waist").value=last.waist;
+      if(last.bf&&$("bf")&&+$("bf").value!==+last.bf)$("bf").value=last.bf; if(last.muscle&&$("muscle")&&+$("muscle").value!==+last.muscle)$("muscle").value=last.muscle; saveForm(); }
   }
-  ["wt","waist"].forEach(function(id){ var el=$(id); if(!el)return; el.readOnly=locked; el.style.opacity=locked?".6":""; });
+  ["wt","waist","bf","muscle"].forEach(function(id){ var el=$(id); if(!el)return; el.readOnly=locked; el.style.opacity=locked?".6":""; });
   var n=$("calcnote"); if(n){ n.hidden=locked; }
   var lk=$("locknote"); if(!lk){ lk=document.createElement("span"); lk.id="locknote"; lk.className="hint"; $("wt").parentNode.appendChild(lk); }
   lk.innerHTML=locked?'ล็อกไว้เป็นจุดเริ่มต้น · อัปเดตน้ำหนักที่กล่อง "ความคืบหน้า" ด้านล่าง · <a href="#" id="unlock">กรอกผิด? เริ่มใหม่</a>':"";
